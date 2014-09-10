@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Gregory Grubbs Blog &middot; Inattention in software explosion
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/development/emacs/android/2010/09/11/tips-on-android-development-using-emacs/">
+        Tips on Android Development Using Emacs
+      </a>
+    </h1>
+
+    <span class="post-date">11 Sep 2010</span>
+
+    <p>Android using Emacs</p>
+
+<p><div id="content">
+<div id="text-1">
+<p>For the intrepid Emacs user, here are some tips for doing Android development without Eclipse. I am working on a follow-up post with some general Android SDK tips.</p>
+<p>&lt;&#47;div&gt;</p>
+<div id="outline-container-1_1">
+<h3 id="sec-1_1">Emacs prerequisites&lt;&#47;h3&gt;</p>
+<div id="text-1_1">
+<ol>
+<li><a href="http:&#47;&#47;github.com&#47;remvee&#47;android-mode&#47;blob&#47;master&#47;android-mode.el">android-mode&lt;&#47;a&gt;<br />
+This mode gives you the following interactive commands:</p>
+<ul>
+<li><code>M-x android-start-emulator&lt;&#47;code&gt; Start the Android SDK emulator from emacs&lt;&#47;li&gt;
+<li><code>M-x android-start-ddms&lt;&#47;code&gt; Start the Android debugger&lt;&#47;li&gt;
+<li><code>M-x android-logcat&lt;&#47;code&gt; Like syslog for Android&lt;&#47;li&gt;
+<li><code>M-x android-ant&lt;&#47;code&gt; Run any ant task in the current project directory&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;<br />
+&lt;&#47;li&gt;</p>
+<li>android.el<br />
+This is a file included in the Android SDK. It duplicates some of the functionality of android-mode, but adds <code>M-x android-jdb&lt;&#47;code&gt;, which starts the JDB debugger once you have DDMS running.Load it from {SDK dir}&#47;tools&#47;lib&lt;&#47;li&gt;</p>
+<li>JDE<br />
+Optional, but it&#39;s great for java code. Required to use beanshell shortcuts like the import statement command below (Generate and insert import statements)&lt;&#47;li&gt;</p>
+<li>Typical emacs setup cruft<br />
+Here&#39;s what I have in my init file for Android:</p>
+<pre>(add-to-list &#39;load-path <span style="color: #bc8f8f;">&quot;~&#47;emacs&#47;android-mode&quot;&lt;&#47;span&gt;)<br />
+        (<span style="color: #a020f0;">require&lt;&#47;span&gt; &#39;<span style="color: #5f9ea0;">android-mode&lt;&#47;span&gt;)<br />
+        (setq android-mode-sdk-dir <span style="color: #bc8f8f;">&quot;~&#47;work&#47;android&#47;android&quot;&lt;&#47;span&gt;)<br />
+        (add-hook &#39;gud-mode-hook<br />
+            (<span style="color: #a020f0;">lambda&lt;&#47;span&gt; ()<br />
+            (add-to-list &#39;gud-jdb-classpath <span style="color: #bc8f8f;">&quot;&#47;home&#47;gregj&#47;work&#47;android-sdk-linux<em>86&#47;platforms&#47;android-7&#47;android.jar&quot;&lt;&#47;span&gt;)<br />
+            ))&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;<br />
+&lt;&#47;ol&gt;<br />
+&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;</p>
+&lt;div id=&quot;outline-container-1</em>2&quot;&gt;
+<h3 id="sec-1_2">Launch the emulator&lt;&#47;h3&gt;</p>
+<div id="text-1_2">
+<p>Although you can start the emulator from within emacs using android-mode: <code>M-x android-start-emulator&lt;&#47;code&gt;</p>
+<p>I prefer to launch from the shell, since this allows me to exit emacs without having to restart the emulator, e.g.:</p>
+<pre>emulator -avd starter-21 -partition-size 128 &gt;&#47;dev&#47;null &amp;&lt;&#47;pre&gt;<br />
+&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;</p>
+<div id="outline-container-1_3">
+<h3 id="sec-1_3">Create a project&lt;&#47;h3&gt;</p>
+<div id="text-1_3">
+<p>Instead of using the New Project wizard in Eclipse, use these steps to create an Android project using the shell:</p>
+<pre>cd {project directory}<br />
+    mkdir HelloAndroid<br />
+    cd HelloAndroid<br />
+    android create project --name HelloAndroid --target android-7 --path . --package home.hoochiepep.HelloAndroid --activity HelloAndroid&lt;&#47;pre&gt;<br />
+Change =--target=, =--package=, and =--activity= parameters as appropriate.</p>
+<p>To get a list of valid targets for your SDK, use</p>
+<pre>android list&lt;&#47;pre&gt;<br />
+&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;</p>
+<div id="outline-container-1_3_1">
+<h3>Specify the application name&lt;&#47;h3&gt;</p>
+<div>To change the name of the application, edit {project root}&#47;res&#47;values&#47;strings.xml:</p>
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">string&lt;&#47;span&gt; <span style="color: #b8860b;">name&lt;&#47;span&gt;=<span style="color: #bc8f8f;">&quot;app<em>name&quot;&lt;&#47;span&gt;&gt;Hello, Android&lt;&#47;<span style="color: #0000ff;">string&lt;&#47;span&gt;&gt;<br />
+&lt;&#47;pre&gt;<br />
+&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;</p>
+&lt;div id=&quot;outline-container-1</em>3<em>2&quot;&gt;
+<h3>Specify a minimum SDK level&lt;&#47;h3&gt;</p>
+<div>The Eclipse New Project wizard includes a Min SDK Version field. To set this without the wizard, add a line to AndroidManifest.xml as a child of manifest:</p>
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">uses-sdk&lt;&#47;span&gt; <span style="color: #da70d6;">android&lt;&#47;span&gt;:<span style="color: #b8860b;">minSdkVersion&lt;&#47;span&gt;=<span style="color: #bc8f8f;">&quot;2&quot;&lt;&#47;span&gt; &#47;&gt;<br />
+&lt;&#47;pre&gt;<br />
+&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;</p>
+&lt;div id=&quot;outline-container-1</em>4&quot;&gt;
+<h3 id="sec-1_4">Make an eclipse project ant-ready (do also when moved to a new machine)&lt;&#47;h3&gt;</p>
+<div id="text-1_4">
+<p>Projects you pull from online will have been created using Eclipse, and will not have a build.xml file for ant.</p>
+<p>Another common problem is that the file <code>local.properties&lt;&#47;code&gt; will be missing. Running an update as shown here will fix both problems:</p>
+<pre>android update project --path . --target android-7 --subprojects&lt;&#47;pre&gt;<br />
+&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;</p>
+<div id="outline-container-1_5">
+<h3 id="sec-1_5">Generate and insert import statements&lt;&#47;h3&gt;</p>
+<div id="text-1_5">
+<p>You will see references to a handy Eclipse command (invoked by Control-Shift-O) which adds import statements for referenced classes.</p>
+<p>The emacs equivalent is found in jde-mode: <code>M-x jde-import-find-and-import&lt;&#47;code&gt; (C-c C-v C-z). Make sure the classpath is set correctly prior to starting jde-mode</p>
+<p>&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;</p>
+<div id="outline-container-1_6">
+<h3 id="sec-1_6">Use the debugger within Emacs&lt;&#47;h3&gt;</p>
+<div id="text-1_6">
+<ul>
+<li>Install the app on the emulator using <code>M-x android-ant-install&lt;&#47;code&gt; (the &#39;install&#39; target uses the debug apk)&lt;&#47;li&gt;
+<li>Start ddms. There are no cmdline args, so you might as well use <code>M-x android-start-ddms&lt;&#47;code&gt;&lt;&#47;li&gt;
+<li>In the emulator, go to Dev Tools -&gt; Development Settings and select the app as the debug app&lt;&#47;li&gt;
+<li>In the emulator, start the app&lt;&#47;li&gt;
+<li>Look in the ddms window for the app&#39;s debug port (usu. 8700 if the Dev Settings step was done)&lt;&#47;li&gt;
+<li>Start jdb by invoking <code>M-x android-jdb&lt;&#47;code&gt; from android.elYou can also start jdb directly using the following command line params as a guide
+<pre>jdb -sourcepath&#47;home&#47;gregj&#47;work&#47;android&#47;projects&#47;NotepadCodeLab&#47;Notepadv3&#47;src -attach localhost:8700&lt;&#47;pre&gt;<br />
+Set breakpoints in JDB, like so</p>
+<pre>stop in com.android.demo.notepad3.NoteEdit.onResume&lt;&#47;pre&gt;<br />
+If the project directory is set correctly in the jdb command, you will be able to set breakpoints by line using jde-mode&#39;s <code>M-x gud-break&lt;&#47;code&gt; (C-x space).&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;<br />
+&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;<br />
+&lt;&#47;div&gt;</p></p>
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page2">Older</a>
+  
+  
+    <span class="pagination-item newer">Newer</span>
+  
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

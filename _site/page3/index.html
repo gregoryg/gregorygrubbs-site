@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Gregory Grubbs Blog &middot; Inattention in software explosion
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/development/wordpress/emacs/2009/11/15/snippets-with-emacs-lisp-power/">
+        Snippets with Emacs Lisp Power
+      </a>
+    </h1>
+
+    <span class="post-date">15 Nov 2009</span>
+
+    <p><a href="http:&#47;&#47;flickr.com&#47;photos&#47;26405526@N00&#47;2188203168" title="As RAW as Winter"><img src="http:&#47;&#47;farm3.static.flickr.com&#47;2165&#47;2188203168_86a4d818f4.jpg" &#47;><&#47;a> </p>
+
+<p>The YASnippet package for Emacs has some pretty awesome power for the developer, especially when you utilize the power of Emacs Lisp.  </p>
+
+<p><object width="425" height="344"><param name="movie" value="http:&#47;&#47;www.youtube.com&#47;v&#47;HPT7pm8ot8M&hl=en_US&fs=1&"><&#47;param><param name="allowFullScreen" value="true"><&#47;param><param name="allowscriptaccess" value="always"><&#47;param><embed src="http:&#47;&#47;www.youtube.com&#47;v&#47;HPT7pm8ot8M&hl=en_US&fs=1&" type="application&#47;x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"><&#47;embed><&#47;object></p>
+
+<p>YASnippet was inspired by TextMate, which was inspired by Emacs, in a highly-out-of-equilibrium whirlwind of self-referential creativity.  </p>
+
+<p>The screencast above uses a set of snippets I originally took from <a href="http:&#47;&#47;top-frog.com&#47;projects&#47;wordpress-textmate-bundle&#47;">this WordPress TextMate bundle<&#47;a>, created by Shawn Parker and Gordon Brander</p>
+
+<p>The first snippet in the screencast illustrates YASnippet's mirrors with transformation, in a WordPress plugin template.  The snippet calls Emacs Lisp functions as the plugin name is filled in to create the plugin URI, the "namespace" (used here as a prefix for function and variable names), and the primary class name for the plugin. </p>
+
+<p>The second snippet writes a function skeleton, then calls Emacs Lisp at the end to move the generated function outside the current scope into a correct position in the file.  This snippet uses YASnippet's fields with transformations syntax, but to do a sneaky thing: not transform the field, but move a region of generated text!</p>
+
+<p>Following is the code for the snippets shown in the screencast, with no commentary.  So pipe up in the comments if you're curious about how something works!</p>
+
+<p><pre lang="PHP"></p>
+
+<h1>-<em>- mode: snippet -</em>-<br /></h1>
+
+<h1>name: WP Plugin<br /></h1>
+
+<h1>key: plugin<br /></h1>
+
+<h1>--<br /></h1>
+
+<p>&#47;<em><br />
+Plugin Name: ${1:Plugin Name}<br />
+Plugin URI: http:&#47;&#47;${2:dynapse.com&#47;plugins&#47;}${1:$(gjg&#47;sanitize text)}&#47;<br />
+Description: ${3:Description}<br />
+Version: ${4:1.0}<br />
+Author: ${5:Gregory Grubbs}<br />
+Author URI: http:&#47;&#47;${6:gregorygrubbs.com&#47;}<br />
+Namespace: ${1:$(gjg&#47;acronyminize text)}_<br />
+*&#47;</p>
+<p>class ${1:$(gjg&#47;whitespace-to-underscore text)} {<br />
+    &#47;</em>*<br />
+     * constructor for $1<br />
+     *<br />
+     * The constructor is responsible for registering all hooks used<br />
+     * by this class as as WordPress plugin<br />
+     *&#47;<br />
+    function _<em>construct() {<br />
+         $0<br />
+    } &#47;&#47; constructor</p>
+<p>}<br />
+$${1:$(gjg&#47;acronyminize text)} = new ${1:$(gjg&#47;whitespace-to-underscore text)}();<br />
+&lt;&#47;pre&gt;</p>
+<p>Next, the add</em>action snippet, which moves a generated function at the end:</p>
+<pre lang="PHP"></p>
+
+<h1>-<em>- mode: snippet -</em>-<br /></h1>
+
+<h1>name: add_action<br /></h1>
+
+<h1>key: add_action<br /></h1>
+
+<h1>--<br /></h1>
+
+<p>add<em>action(&#39;${1:init}&#39;, array($this, &#39;my</em>${2:$1}&#39;));<br />
+${3:$$(gjg&#47;move-next-sexp-past-current-scope)}<br />
+function my_$1 () {<br />
+}<br />
+&lt;&#47;pre&gt;</p>
+<p>And finally, (some of) the Emacs Lisp functions that the snippets call:</p>
+<pre lang="Lisp">
+(defun gjg&#47;acronyminize (text &amp;optional do-capitalize)<br />
+  &quot;Make an acronym from the text<br />
+do-capitalize: t means run text through capitalize function, nil will respect CamelCase<br />
+&quot;<br />
+  (save-excursion<br />
+    (setq case-fold-search nil)<br />
+    (downcase<br />
+     (replace-regexp-in-string<br />
+      &quot;[^A-Z]&quot; &quot;&quot;<br />
+      (if do-capitalize (capitalize text) text) nil t))))<br />
+(defun gjg&#47;move-next-sexp-past-current-scope ()<br />
+  &quot;kill sexp following point, move past current scope&#47;sexp&#47;function&quot;<br />
+  (beginning-of-line)<br />
+  (let ((beg (point)))<br />
+    (re-search-forward &quot;^[ \t]*function[ \t]+[^}]+?}&quot; (point-max) nil)<br />
+    (mark-defun)<br />
+    (kill-region (point) (mark)))<br />
+  (forward-line)<br />
+  (yank)<br />
+  (indent-region (mark) (point)))<br />
+&lt;&#47;pre&gt;</p></p>
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page4">Older</a>
+  
+  
+    
+      <a class="pagination-item newer" href="/page2">Newer</a>
+    
+  
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Get remote X Windows working in Ubuntu Karmic &middot; Gregory Grubbs Blog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="post">
+  <h1 class="post-title">Get remote X Windows working in Ubuntu Karmic</h1>
+  <span class="post-date">26 Oct 2009</span>
+  <p><a href="http:&#47;&#47;flickr.com&#47;photos&#47;40418474@N00&#47;2776450260" title="El gegant &#47;&#47; The Giant"><img src="http:&#47;&#47;farm4.static.flickr.com&#47;3082&#47;2776450260_e35cd9a763.jpg" &#47;><&#47;a></p>
+
+<p>One thing that troubled me moving to Ubuntu 9.10 Karmic Koala: my remote X applications stopped working with the error<br />
+<code>X11 connection rejected because of wrong authentication<&#47;code></p>
+
+<p><a id="more"></a><a id="more-391"></a><br />
+The reason seems to be that Gnome moved the location of X authorization to [wherever-the-hell-i-dont-remember], whereas ssh and everything else still use the same location (<code>~&#47;.Xauthority<&#47;code>).  Note: I clearly forgot whatever it was I discovered about xauth, so please enlighten me in the comments, and I will update this exceedingly lame paragraph.</p>
+
+<p>This is going to be tagged as an Emacs post because my principal reason to use remote X is Emacs' awesome <code>make-frame-on-display<&#47;code> command.</p>
+
+<p>The bash script I use is saved in ~&#47;bin&#47;xauthmagic:</p>
+
+<p><pre lang="bash" line="1"></p>
+
+<h1>!&#47;bin&#47;bash<br /></h1>
+
+<p>xauth -f ~&#47;.Xauthority list | grep -v &#39;:0&#39; | while read foo; do xauth add $foo; done<br />
+&lt;&#47;pre&gt;</p>
+<p>This means: look through all the xauth cookies in <code>~&#47;.Xauthority&lt;&#47;code&gt;, remove the &#39;:0&#39; (local) display cookie, take the remaining cookies and run the <code>xauth&lt;&#47;code&gt; command on them.</p>
+<p>The steps I take to use this:</p>
+<ul>
+<li>On my remote host (emunah), start an ssh section forwarding X:
+<pre lang="bash">
+greg@emunah$ ssh greg@maui -Y<br />
+&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li>
+On my local host (maui), run the <code>xauthmagic&lt;&#47;code&gt; script above</p>
+<pre lang="bash">
+greg@maui$ ~&#47;bin&#47;xauthmagic<br />
+&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li>
+From my local host emacs, run <code>M-x make-frame-on-display RET localhost:10.0 RET&lt;&#47;code&gt;<br />
+&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<p>Et voil&aacute;!</p></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//development/emacs/android/2010/09/11/tips-on-android-development-using-emacs/">
+            Tips on Android Development Using Emacs
+            <small>11 Sep 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//emacs/2010/05/23/10-tips-emacs-windows/">
+            10 Tips for Powerful Emacs on Windows
+            <small>23 May 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//development/wordpress/emacs/2009/11/15/snippets-with-emacs-lisp-power/">
+            Snippets with Emacs Lisp Power
+            <small>15 Nov 2009</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

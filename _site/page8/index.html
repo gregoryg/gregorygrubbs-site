@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Gregory Grubbs Blog &middot; Inattention in software explosion
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/development/wordpress/wordpress-mu/2009/03/30/one-button-website-publishing-using-wordpress-mu/">
+        One-button website publishing using WordPress-mu
+      </a>
+    </h1>
+
+    <span class="post-date">30 Mar 2009</span>
+
+    <p><a title="Create many from the one" href="http:&#47;&#47;flickr.com&#47;photos&#47;63989735@N00&#47;2431138923"><img src="http:&#47;&#47;farm3.static.flickr.com&#47;2299&#47;2431138923_ff1f7aaa36.jpg" alt="" &#47;><&#47;a></p>
+
+<p>I'm kinda loving on WordPress MU.  One of my recent projects required building web sites that pulled from a shared database.  WordPress MU allowed me to create a one-button website builder for my client.  WordPress MU calls them blogs, but my client will map a unique domain to each blog, and, well, doesn't use them as blogs at all.  So I'm calling them sites here.</p>
+
+<p>By filling in three fields and clicking a button, my client creates a website that</p>
+
+<p><ul>
+<li> Associates metadata with the site that specifies filter criteria to select records from the shared database&lt;&#47;li&gt;
+<li> Sets the permalink structure for the new site to a custom setting&lt;&#47;li&gt;
+<li> Creates a key category for the new site, one that is used for the posts generated in a later step&lt;&#47;li&gt;
+<li> Sets the theme&lt;&#47;li&gt;
+<li> All the initial pages are created, including content.  The &quot;slug&quot; is set specifically to support the URL structure we want.  Page template is also set here because our design calls for a hierarchy of pages.&lt;&#47;li&gt;
+<li> If the PageMash plugin is active (it is auto-activated for all new blogs using Plugin Commander), certain pages are hidden, and a specific order is set so that page navigation comes out looking good&lt;&#47;li&gt;
+<li> The front page is set, because we are creating CMS sites, not blogs&lt;&#47;li&gt;
+<li>Several hundred posts are generated out of the underlying shared non-WPMU database tables&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;<br />
+All of this takes something like 20 seconds, at which point the admin can visit the new site as a subdomain.&nbsp; The theme has been applied, navigation works correctly, it is beauty.</p>
+<p><a id="more"></a><a id="more-174"></a></p>
+<p>Here&#39;s how it is done in code.&nbsp; All you need to do is register a function for the action hook that WordPress MU runs when a new blog is created.</p>
+<pre lang="PHP">function mypp<em>initialize</em>blog($blog<em>id) {<br />
+  global $wp</em>rewrite;</p>
+<p>  &#47;&#47; first, switch to the new blog; we will undo this at the<br />
+  &#47;&#47; end of the function with restore<em>current</em>blog()<br />
+  switch<em>to</em>blog($blog<em>id);<br />
+  &#47;&#47; add a blog option, here a filter with a default value<br />
+  add</em>option($blog<em>id, &#39;campus</em>selection<em>criteria&#39;, &quot;CampusStateID=&#39;CA&#39;&quot;);<br />
+  &#47;&#47; Set a custom permalink structure<br />
+  $wp</em>rewrite-&gt;set<em>permalink</em>structure(&#39;&#47;%category%&#47;%postname%&#39;);<br />
+  $wp<em>rewrite-&gt;flush</em>rules();<br />
+  if (function<em>exists(&#39;wp</em>create<em>category&#39;)) {<br />
+      wp</em>create<em>category(&#39;schools&#39;);<br />
+  }</p>
+<p>  &#47;&#47; switch theme - this one specifies a child theme<br />
+  switch</em>theme(&#39;corporate&#39;, &#39;tweaked-corporate&#39;);<br />
+  &#47;&#47; Prepare options used by the pageMash plugin, auto-activated for new sites<br />
+  if(!is<em>array(get</em>option(&#39;exclude<em>pages&#39;)))<br />
+    $excludePagesList=array();<br />
+  else<br />
+    $excludePagesList = get</em>option(&#39;exclude<em>pages&#39;); &#47;&#47;if it&#39;s empty set as an empty array<br />
+  &#47;&#47; add pages to support the basic page structure<br />
+  &#47;&#47; NOTE: the full code is not shown, standard use of wp</em>insert post<br />
+  &#47;&#47; for each page:<br />
+  $newid = wp<em>insert</em>post($postdata);<br />
+  if ($newid &amp;&amp; !is<em>wp</em>error($newid)) {<br />
+    add<em>meta($newid);<br />
+    if ( IWANTOEXCLUDETHISPARTICULARPAGEFROMNAVIGATION )<br />
+      $excludePagesList[] = $newid;<br />
+    if (THISPARTICULARPAGE == &#39;home&#39;) {<br />
+      update</em>option(&#39;show<em>on</em>front&#39;, &#39;page&#39;);<br />
+      update<em>option(&#39;page</em>on<em>front&#39;, $newid);<br />
+    }<br />
+  } else {<br />
+    &#47;&#47; error handling if insert post failed<br />
+  }<br />
+  &#47;&#47; end for each page<br />
+  update</em>option(&#39;exclude<em>pages&#39;, $excludePagesList);<br />
+  &#47;&#47; now generate posts for schools from the shared database<br />
+  createSchoolAsPost(&#39;&#39;, $blog</em>id);<br />
+  &#47;&#47; we&#39;re done! restore our initial blog<br />
+  restore<em>current</em>blog();<br />
+} &#47;&#47; function mypp<em>initialize</em>blog</p>
+<p>add<em>action(&#39;wpmu</em>new<em>blog&#39;, &#39;mypp</em>initialize_blog&#39;);&lt;&#47;pre&gt;</p></p>
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page9">Older</a>
+  
+  
+    
+      <a class="pagination-item newer" href="/page7">Newer</a>
+    
+  
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

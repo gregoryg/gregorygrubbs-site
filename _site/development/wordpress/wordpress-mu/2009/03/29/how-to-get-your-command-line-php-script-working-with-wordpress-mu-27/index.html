@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      How to get your command line PHP script working with WordPress-MU 2.7 &middot; Gregory Grubbs Blog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="post">
+  <h1 class="post-title">How to get your command line PHP script working with WordPress-MU 2.7</h1>
+  <span class="post-date">29 Mar 2009</span>
+  <p><a href="http:&#47;&#47;flickr.com&#47;photos&#47;86639396@N00&#47;125838823" title="To the moon, Ajax!"><img src="http:&#47;&#47;farm1.static.flickr.com&#47;48&#47;125838823_e1a4d43a62_m.jpg" &#47;><&#47;a></p>
+
+<p> OK, this one is obscure. I only post about what I can't find on Google!</p>
+
+<p>Until recently it has been possible to run command-line PHP scripts that include wp-config.php or wpmu-settings.php, in order to give those scripts access to WordPress globals like $wpdb, functions such as wp_insert_post etc.  </p>
+
+<p>These scripts worked with WordPress-MU until recently -- now the scripts just exit with no output.  </p>
+
+<p>The reason?  WPMU now initiates a redirect in the bootstrap process (search for 'header( "Location: "'  in wpmu-settings.php).  A browser can follow that redirection, but a command line script cannot.  So, if you want to initiate scripts that run from the command line, you will have to get the web server involved by invoking a text browser such as curl, wget, or links.  </p>
+
+<p>It's best not to force your scripts to figure out where to find wp-config.php anyway.  I have taken to using a method suggested in <a href="http:&#47;&#47;wordpress.org&#47;support&#47;topic&#47;190522">this thread<&#47;a>, as shown in the code sample below.  The good news is, you know that your script will work the same whether initiated from a plugin in a graphic browser, used in an Ajax call, or initiated from cron or the command line shell.</p>
+
+<p>So instead of kicking your script off with something like </p>
+
+<p><pre lang="Bash">
+&#47;usr&#47;bin&#47;php -q myscript.php<br />
+&lt;&#47;pre&gt;</p>
+<p>You will create the script as a proper plugin and do something like</p>
+<pre lang="Bash">
+&#47;usr&#47;bin&#47;curl -d mypp<em>cmd=status http:&#47;&#47;mywpmusite.com<br />
+&lt;&#47;pre&gt;</p>
+<p>Sample plugin code used for the above example follows.  The prefix for the functions is &#39;mypp&#39;, which of course stands for &#39;MY Plugin Prefix&#39; to create a unique namespace.  The code below returns results as JSON encoded, and calls die()&#47;exit() at the end to prevent an entire page being created.  For log files run from cron, you may choose to return plain text instead.</p>
+<pre lang="PHP">
+  &#47;**<br />
+   * Add a query var for this plugin<br />
+   * This allows Ajax programs to operate without requiring file paths<br />
+   * Instead, Ajax functions look for the query var &#39;mypp</em>cmd&#39;<br />
+   <em>&#47;<br />
+  function mypp<em>query</em>vars($qvars) {<br />
+    $qvars[] = &#39;mypp<em>cmd&#39;;<br />
+    return $qvars;<br />
+  } &#47;&#47; function mypp</em>query_vars</p>
+<p>  &#47;</em>*<br />
+   * Handle AJAX requests in the template<em>redirect action<br />
+   * We recognize our requests from the query var &#39;mypp</em>cmd&#39;<br />
+   * Here we allow GET requests using $<em>REQUEST; to restrict to POST, use $</em>POST instead<br />
+   *&#47;<br />
+  function mypp<em>template</em>redirect() {<br />
+    global $wpdb;<br />
+    $cmd = get<em>query</em>var(&#39;mypp<em>cmd&#39;);<br />
+    $response = array();<br />
+    if ($cmd) {<br />
+      switch($cmd) {<br />
+      case &#39;status&#39;:<br />
+    $response[&#39;status&#39;] = array(&#39;success&#39; =&gt; true,<br />
+                    &#39;message&#39; =&gt; &#39;Sample status message&#39;);<br />
+    break;<br />
+      default:<br />
+    $response[&#39;status&#39;] = array(&#39;success&#39; =&gt; false,<br />
+                    &#39;msg&#39; =&gt; &#39;Unknown command&#39;,<br />
+                    &#39;cmd&#39; =&gt; $cmd);<br />
+    break;<br />
+      } &#47;&#47; switch $cmd<br />
+      header(&#39;Content-type: text&#47;x-json; charset=utf-8&#39;);<br />
+      print utf8</em>encode(json<em>encode($response));<br />
+      die();<br />
+    } &#47;&#47; $cmd is set<br />
+  } &#47;&#47; function mypp</em>template<em>redirect</p>
+<p>add</em>filter(&#39;query<em>vars&#39;, array($this, &#39;mypp</em>query<em>vars&#39;));<br />
+add</em>action(&#39;template<em>redirect&#39;, array($this, &#39;mypp</em>template_redirect&#39;));</p>
+<p>&lt;&#47;pre&gt;</p></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//development/emacs/android/2010/09/11/tips-on-android-development-using-emacs/">
+            Tips on Android Development Using Emacs
+            <small>11 Sep 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//emacs/2010/05/23/10-tips-emacs-windows/">
+            10 Tips for Powerful Emacs on Windows
+            <small>23 May 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//development/wordpress/emacs/2009/11/15/snippets-with-emacs-lisp-power/">
+            Snippets with Emacs Lisp Power
+            <small>15 Nov 2009</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

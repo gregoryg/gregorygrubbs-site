@@ -1,0 +1,22 @@
+# Dependencies
+markdown:         redcarpet
+highlighter:         pygments
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            Gregory Grubbs Blog
+tagline:          Inattention in software explosion
+url:              http://gregorygrubbs.com
+paginate:         1
+baseurl:          /
+author:
+  name:           Gregory Grubbs
+  url:            https://twitter.com/gregoryg
+  email:          gregoryg@dynapse.com
+
+# Custom vars
+version:          1.0.0
+github:
+  repo:           https://github.com/gregoryg/poole

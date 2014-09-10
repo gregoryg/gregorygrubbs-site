@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      10 Tips for Powerful Emacs on Windows &middot; Gregory Grubbs Blog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="post">
+  <h1 class="post-title">10 Tips for Powerful Emacs on Windows</h1>
+  <span class="post-date">23 May 2010</span>
+  <p><a title="Ladybug Liftoff" href="http:&#47;&#47;flickr.com&#47;photos&#47;23084352@N00&#47;403926829"><img src="http:&#47;&#47;farm1.static.flickr.com&#47;163&#47;403926829_cc213ee88b.jpg" alt="" &#47;><&#47;a></p>
+
+<p>I avoided using Microsoft Windows for almost 15 years, but with my<br />
+new job at a Microsoft-enthralled development shop, those idyllic<br />
+days have come to an abrupt end.  Because in the past I could always<br />
+use my trusty Linux and OS X machines, I never did push past the<br />
+hurdles of using Emacs on Windows.  My utter reliance on Org-mode,<br />
+TRAMP, and Ediff (to name a few) made it essential to get Emacs<br />
+working on Windows if at all possible.</p>
+
+<p>Now I am using Emacs on Windows XP and Windows 7 on a daily basis,<br />
+and am quite happy with the results.  It was not easy to get to the<br />
+point of full functionality, so I wanted to share the magic that<br />
+makes it all work.<br />
+<a id="more"></a><a id="more-439"></a></p>
+
+<p>I have decided against using the Cygwin Emacs package for several reasons:</p>
+
+<p><ul>
+<li>Running a windowed&#47;multi-frame&#47;pretty version requires running<br />
+Cygwin-X, which is quite a lot of overhead just to run Emacs. I<br />
+have had a few interface and display problems lately with Cygwin-X<br />
+also.&lt;&#47;li&gt;</p>
+<li>Cool-though-seldom-used features that work in the native port do<br />
+not work in the Cygwin port: Window opacity control, for example&lt;&#47;li&gt;</p>
+<li>Using the native port means I can always be running the latest<br />
+released version from gnu.org&lt;&#47;li&gt;</p>
+<li>The native port just runs faster&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;<br />
+On the other hand, Cygwin does play a crucial role in making the<br />
+native Emacs port work properly.  I have tried and hated using PuTTY<br />
+and Plink, and various one-off ports of standard Unix commands.<br />
+Using Cygwin and its package management makes all this<br />
+much simpler and more reliable.</p>
+<p>So all the hints given here use the &quot;official&quot; Emacs for Windows<br />
+(sometimes referred to as NTEmacs), as well as Cygwin (with no<br />
+dependency on Cygwin-X).</p>
+<p>I really hope this helps some poor beleaguered Linux&#47;OS X Emacs user<br />
+make the giant backwards leap. With these tips and little helpers like<br />
+<a href="http:&#47;&#47;www.launchy.net&#47;">Launchy&lt;&#47;a&gt;, you won&#39;t even have to<br />
+acknowledge that you&#39;re running Windows!</p>
+<h2>Software download links&lt;&#47;h2&gt;<br />
+Here&#39;s where you will find all the software referenced in the tips:</p>
+<ul>
+<li><a href="http:&#47;&#47;ftp.gnu.org&#47;pub&#47;gnu&#47;emacs&#47;windows&#47;">Emacs for Windows&lt;&#47;a&gt;&lt;&#47;li&gt;
+<li><a href="http:&#47;&#47;www.cygwin.com&#47;">Cygwin&lt;&#47;a&gt;&lt;&#47;li&gt;
+<li><a href="http:&#47;&#47;gnuwin32.sourceforge.net&#47;">GnuWin32&lt;&#47;a&gt; for image libraries&lt;&#47;li&gt;
+<li><a href="ftp:&#47;&#47;ftp.franken.de&#47;pub&#47;win32&#47;develop&#47;gnuwin32&#47;cygwin&#47;porters&#47;Humblet_Pierre_A&#47;V1.1&#47;ispell-3.2.06-cygwin-1.3-bin.tar.gz">ISpell package&lt;&#47;a&gt;&lt;&#47;li&gt;
+<li><a href="http:&#47;&#47;files.emacsblog.org&#47;ryan&#47;elisp&#47;maxframe.el">Maxframe.el&lt;&#47;a&gt;&lt;&#47;li&gt;
+<li><a href="http:&#47;&#47;mirror.cs.wisc.edu&#47;pub&#47;mirrors&#47;ghost&#47;ghostgum&#47;gsv49w32.exe">GSView&lt;&#47;a&gt;&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h2>Tip #1: General Usage&lt;&#47;h2&gt;</p>
+<ul>
+<li>Execute runemacs.exe or emacsclientw.exe.  On your Linux and OS X<br />
+systems, the binary names or emacs and emacsclient: just use the<br />
+windows-specific wrappers included in the standard port when on MS Windows.&lt;&#47;li&gt;</p>
+<li>Add Cygwin &#47;bin to exec-path.
+<pre lang="Lisp">      (if (file-directory-p &quot;c:&#47;cygwin&#47;bin&quot;)<br />
+      (add-to-list &#39;exec-path &quot;c:&#47;cygwin&#47;bin&quot;))&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h2>Tip #2: Make TRAMP work nicely -- and without PuTTY&lt;&#47;h2&gt;<br />
+There are people using PuTTY and Plink.exe to get this working, but<br />
+I like using good old OpenSSH much better: no translation required<br />
+for the keys I use, and I have it installed anyway in Cygwin.</p>
+<ul>
+<li>Install Cygwin, including the OpenSSH package&lt;&#47;li&gt;
+<li>In your Emacs init, set shell to bash
+<pre lang="Lisp">      (setq shell-file-name &quot;bash&quot;)<br />
+      (setq explicit-shell-file-name shell-file-name)&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li>In Emacs init, set tramp-default-method to &quot;sshx&quot; or &quot;scpx&quot;
+<pre lang="Lisp">      (cond  ((eq window-system &#39;w32)<br />
+      (setq tramp-default-method &quot;scpx&quot;))<br />
+      (t<br />
+      (setq tramp-default-method &quot;scpc&quot;)))&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li>Windows 7 note: &nbsp; I was unable to get this to work on Win7 until I set the runemacs.exe binary to run in Windows XP (Service Pack 3) compatibility mode.&lt;&#47;li&gt;
+<li>Test: Try <code>M-x shell&lt;&#47;code&gt;, then visit a TRAMP site such as <code>&#47;user@site:&lt;&#47;code&gt; and try <code>M-x shell&lt;&#47;code&gt; from there!&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h2>Tip #3: Use SVN and GIT without tears&lt;&#47;h2&gt;<br />
+Version control should work out of the box -- but SSH problems can<br />
+interfere sometimes.  So once you get TRAMP working properly, you<br />
+should have no problems with VC.</p>
+<ul>
+<li>Install subversion and git from Cygwin&lt;&#47;li&gt;
+<li>Use built-in vc-dir, or psvn.el and magit.el&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h2>Tip #4: Display images in buffers, including doc-view&lt;&#47;h2&gt;<br />
+You may have noticed that your Windows Emacs has no ability to<br />
+display images.  This is simply due to the fact that the port is<br />
+not distributed with the libraries necessary to display them.</p>
+<p>The solution is to visit the GnuWin32 link above, download the<br />
+packages relevant to the types of images you want to display<br />
+(including zlib1 for compressed images), and copy the DLLs into the<br />
+bin directory of your Emacs installation (e.g, C:\Program<br />
+Files\emacs23-2\bin).</p>
+<p>Images will only be displayed after restarting Emacs.</p>
+<p>Here&#39;s a list of DLLs that I now have in my installation:</p>
+<ul>
+<li>jpeg62.dll&lt;&#47;li&gt;
+<li>libXpm.dll&lt;&#47;li&gt;
+<li>libjpeg-62.dll&lt;&#47;li&gt;
+<li>libpng-bcc.lib&lt;&#47;li&gt;
+<li>libpng.dll.a&lt;&#47;li&gt;
+<li>libpng.la&lt;&#47;li&gt;
+<li>libpng.lib&lt;&#47;li&gt;
+<li>libpng12-0.dll&lt;&#47;li&gt;
+<li>libpng12.def&lt;&#47;li&gt;
+<li>libpng12.dll&lt;&#47;li&gt;
+<li>libpng12.dll.a&lt;&#47;li&gt;
+<li>libpng12.la&lt;&#47;li&gt;
+<li>libtiff3.dll&lt;&#47;li&gt;
+<li>zlib1.dll (for compression, not images)&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h2>Tip #5: Use W3M&lt;&#47;h2&gt;<br />
+The W3M web browser works fine once you install the w3m binary --<br />
+and once the image display step above is working, you will be able<br />
+to display images in the W3M buffers as well.</p>
+<ul>
+<li>Install w3m from Cygwin&lt;&#47;li&gt;
+<li>Test image display by hitting <code>T&lt;&#47;code&gt; (w3m-toggle-inline-images)&lt;&#47;li&gt;
+<li>Example screenshot:<br />
+<a rel="attachment wp-att-450" href="http:&#47;&#47;gregorygrubbs.com&#47;emacs&#47;10-tips-emacs-windows&#47;attachment&#47;emacs_pacman_google&#47;"><img class="alignnone size-medium wp-image-450" title="W3M Browser in Emacs" src="http:&#47;&#47;gregorygrubbs.com&#47;wp-content&#47;uploads&#47;2010&#47;05&#47;emacs_pacman_google-300x127.jpg" alt="W3M Browser in Emacs" width="300" height="127" &#47;>&lt;&#47;a&gt;&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h2>Tip #6: Bring back Ediff and Smerge&lt;&#47;h2&gt;<br />
+Ediff is yet another thing which doesn&#39;t work as it should.  You<br />
+will get an error complaining about Dos-style versus Unix-style<br />
+paths.  Fixing it is a simple matter of setting an environment variable.</p>
+<ul>
+<li>Assure you have Cygwin&#39;s diff package installed&lt;&#47;li&gt;
+<li>Set the Windows environment variable nodosfilewarning=1&lt;&#47;li&gt;
+<li>Restart Emacs, and verify that the environment variable is set by executing <code>M-x shell&lt;&#47;code&gt;, then typing <code>env | grep dos&lt;&#47;code&gt;, for example&lt;&#47;li&gt;
+<li><strong>Always, prior to running ediff&lt;&#47;strong&gt;, execute <code>M-x shell&lt;&#47;code&gt;&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h2>Tip #7: Spell using ISpell or Aspell&lt;&#47;h2&gt;<br />
+Fortunately very easy to get working by following <a href="http:&#47;&#47;bria.nwood.org&#47;node&#47;49">Brian Wood&#39;s directions&lt;&#47;a&gt; using the ISpell package for Cygwin linked above.</p>
+<p><strong>Note added later:&lt;&#47;strong&gt;</p>
+<p>Aspell is even easier to use: just install aspell and the correct language(s) in Cygwin, then use the following in your emacs init:</p>
+<pre lang="Lisp">(setq-default ispell-program-name &quot;aspell&quot;)&lt;&#47;pre&gt;</p>
+<h2>Tip #8: Maximized frame works using maxframe.el&lt;&#47;h2&gt;<br />
+Those of us who practice Distraction-Free Emacsing, or DFE, will<br />
+lament the inability to maximize the frame as we can do on other<br />
+systems (ie, a true maximized windows, with no OS window<br />
+decoration).  The solution is provided by maxfame.el, linked above.</p>
+<p>After loading maxframe.el, use <code>M-x maximize-frame&lt;&#47;code&gt; and <code>M-x restore-frame&lt;&#47;code&gt;</p>
+<h2>Tip #9: Print on PostScript printers&lt;&#47;h2&gt;<br />
+And finally, printing.  Even this just didn&#39;t work out of the box<br />
+for me.  The solution was to use a nice little utility called<br />
+GSPrint from the GSView package linked above.</p>
+<ul>
+<li>Install Ghostscript in Cygwin&lt;&#47;li&gt;
+<li>Install GSView
+<pre lang="Lisp">      (when (and (string= (window-system) &quot;w32&quot;) (file-exists-p &quot;c:&#47;Program Files&#47;Ghostgum&#47;gsview&#47;gsprint.exe&quot;))<br />
+      (progn<br />
+      ;;  Windows printer<br />
+      (setq-default ps-lpr-command (expand-file-name &quot;c:&#47;Program Files&#47;Ghostgum&#47;gsview&#47;gsprint.exe&quot;))<br />
+      (setq-default ps-printer-name t)<br />
+      (setq-default ps-printer-name-option nil)<br />
+      (setq ps-lpr-switches &#39;(&quot;-query&quot;)) ; show printer dialog<br />
+      (setq ps-right-header &#39;(&quot;&#47;pagenumberstring load&quot; ps-time-stamp-mon-dd-yyyy))))<br />
+      (if (eq window-system &#39;x)<br />
+      (setq ps-lpr-command &quot;gtklp&quot;))&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h2>Tip #10: Some things Just Work&trade;: Nifty Emacs 23 features that work &quot;out of the box&quot;&lt;&#47;h2&gt;<br />
+Bonus tip &mdash; some things work already, no fiddling required!</p>
+<h3>Select any font you want&lt;&#47;h3&gt;</p>
+<ul>
+<li>M-x menu-set-font (choose something lovely like Consolas or Inconsolata ... or Comic Sans MS)&lt;&#47;li&gt;
+<li>Example font selection, cross-OS
+<pre lang="Lisp">      ;;* Font selection<br />
+      (cond ((or (eq window-system &#39;mac) (eq window-system &#39;ns))<br />
+      (set-face-font &#39;default &#39;&quot;-apple-inconsolata-medium-r-normal--16-0-72-72-m-0-iso10646-1&quot;))<br />
+      ((eq window-system &#39;w32)<br />
+      (set-face-font &#39;default &#39;&quot;-outline-Inconsolata-normal-normal-normal-mono-16-<em>-</em>-<em>-c-</em>-iso8859-1&quot;))<br />
+      ((and (eq window-system &#39;x) (eq emacs-major-version 23))<br />
+      (set-face-font &#39;default &#39;&quot;-unknown-Inconsolata-normal-normal-normal-<em>-16-</em>-<em>-</em>-m-0-iso10646-1&quot;)<br />
+      (add-to-list &#39;default-frame-alist &#39;(font . &quot;-unknown-Inconsolata-normal-normal-normal-<em>-16-</em>-<em>-</em>-m-0-iso10646-1&quot;))<br />
+      )<br />
+      ((eq window-system &#39;x)<br />
+      (set-face-font &#39;default &#39;&quot;10x20&quot;)))</p>
+<p>      (add-hook &#39;before-make-frame-hook<br />
+      (lambda ()<br />
+      (set-frame-font &quot;-unknown-Inconsolata-normal-normal-normal-<em>-16-</em>-<em>-</em>-m-0-iso10646-1&quot;)<br />
+      ))&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li><code>M-x grep&lt;&#47;code&gt;, <code>M-x grep-find&lt;&#47;code&gt;, <code>M-x rgrep&lt;&#47;code&gt; and friends (as long as<br />
+you have the <code>grep&lt;&#47;code&gt; and <code>find&lt;&#47;code&gt; commands installed!)&lt;&#47;li&gt;</p>
+<li><code>M-x tetris&lt;&#47;code&gt;, <code>M-x doctor&lt;&#47;code&gt;, <code>M-x yow&lt;&#47;code&gt;, <code>M-x butterfly&lt;&#47;code&gt;&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p>
+<h3>Frame transparency&lt;&#47;h3&gt;</p>
+<ul>
+<li>Transparent windows are not my favorite thing, as they tend to<br />
+hamper DFE (see above).  But there are occasions, like copying text from a<br />
+web page into an Emacs buffer, where it can come in quite handy.</p>
+<pre lang="Lisp">      (defun set-transparency (alpha-level)<br />
+      (interactive &quot;p&quot;)<br />
+      (message (format &quot;Alpha level passed in: %s&quot; alpha-level))<br />
+      (let ((alpha-level (if (&lt; alpha-level 2)<br />
+                (read-number &quot;Opacity percentage: &quot; 85)<br />
+                alpha-level))<br />
+                (myalpha (frame-parameter nil &#39;alpha)))<br />
+                (set-frame-parameter nil &#39;alpha alpha-level))<br />
+                (message (format &quot;Alpha level is %d&quot; (frame-parameter nil &#39;alpha))))&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;<br />
+&lt;&#47;ul&gt;</p></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//development/emacs/android/2010/09/11/tips-on-android-development-using-emacs/">
+            Tips on Android Development Using Emacs
+            <small>11 Sep 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//development/wordpress/emacs/2009/11/15/snippets-with-emacs-lisp-power/">
+            Snippets with Emacs Lisp Power
+            <small>15 Nov 2009</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//development/emacs/2009/11/14/fast-file-access-with-emacs-and-ido-mode/">
+            FAST file access with Emacs and ido-mode
+            <small>14 Nov 2009</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

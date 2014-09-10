@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Gregory Grubbs Blog &middot; Inattention in software explosion
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/development/emacs/2009/11/14/fast-file-access-with-emacs-and-ido-mode/">
+        FAST file access with Emacs and ido-mode
+      </a>
+    </h1>
+
+    <span class="post-date">14 Nov 2009</span>
+
+    <p><a href="http:&#47;&#47;flickr.com&#47;photos&#47;10226264@N04&#47;2097587325" title="18 ampolles"><img src="http:&#47;&#47;farm3.static.flickr.com&#47;2254&#47;2097587325_5861cc68ea.jpg" &#47;><&#47;a></p>
+
+<p>One of the things that makes daily Emacs use so enjoyable is the availability of brilliant add-ons designed to make you work faster.  </p>
+
+<p>Emacs with ido-mode fuzzy matching (or flex matching) makes it incredibly quick to navigate the file system using only the keyboard. But it does far more than that, allowing the emacs pilot to quickly find help, commands, variables and much more. This video shows the finer points of using ido-mode with flex matching.</p>
+
+<p>It's all in the video - enjoy.</p>
+
+<p><object width="425" height="344"><param name="movie" value="http:&#47;&#47;www.youtube.com&#47;v&#47;lsgPNVIMkIE&hl=en_US&fs=1&"><&#47;param><param name="allowFullScreen" value="true"><&#47;param><param name="allowscriptaccess" value="always"><&#47;param><embed src="http:&#47;&#47;www.youtube.com&#47;v&#47;lsgPNVIMkIE&hl=en_US&fs=1&" type="application&#47;x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"><&#47;embed><&#47;object></p>
+
+<p>Here are my current settings for ido-mode</p>
+
+<p><pre lang="lisp">
+;; do not confirm a new file or buffer<br />
+(setq confirm-nonexistent-file-or-buffer nil)<br />
+(require &#39;ido)<br />
+(ido-mode 1)<br />
+(ido-everywhere 1)<br />
+(setq ido-enable-flex-matching t)<br />
+(setq ido-create-new-buffer &#39;always)<br />
+(setq ido-enable-tramp-completion nil)<br />
+(setq ido-enable-last-directory-history nil)<br />
+(setq ido-confirm-unique-completion nil) ;; wait for RET, even for unique?<br />
+(setq ido-show-dot-for-dired t) ;; put . as the first item<br />
+(setq ido-use-filename-at-point t) ;; prefer file names near point<br />
+&lt;&#47;pre&gt;</p></p>
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page5">Older</a>
+  
+  
+    
+      <a class="pagination-item newer" href="/page3">Newer</a>
+    
+  
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

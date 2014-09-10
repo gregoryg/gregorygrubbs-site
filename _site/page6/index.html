@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Gregory Grubbs Blog &middot; Inattention in software explosion
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/development/wordpress/emacs/2009/10/02/emacs-power-remote-servers-and-shell-commands/">
+        Emacs Power: remote servers and shell commands
+      </a>
+    </h1>
+
+    <span class="post-date">02 Oct 2009</span>
+
+    <p><a href="http:&#47;&#47;flickr.com&#47;photos&#47;16230215@N08&#47;2898797929" title="Come Together"><img src="http:&#47;&#47;farm4.static.flickr.com&#47;3282&#47;2898797929_f209eeb4a4.jpg" &#47;><&#47;a></p>
+
+<p><h4 id="sec-1">Emacs file and directory browsing &lt;&#47;h4&gt;</p>
+<p>Emacs has Dired, a great method for browsing directories; especially in combination with ido-mode, I prefer it to Windows Explorer, OS X Finder, Gnome Nautilus, or anything else I&#39;ve used over the decades to browse file systems. You can quickly begin entering paths, and Dired helps you with directory and file name completion.<br />
+<a id="more"></a><a id="more-372"></a></p>
+<p>  As you browse directories, emacs lets you bookmark any path you may visit again. A very cool feature of emacs is the wide variety of shell-based modes: shell, term, interactive SQL, version control, recursive grep, and more.  When you are looking at a Dired buffer and invoke any of those commands, the shell is started in the directory you are looking at.</p>
+<h4 id="sec-2">TRAMP: powerful remote file server access &lt;&#47;h4&gt;</p>
+<p>An emacs user will eventually discover that Dired becomes even more powerful with the built-in power of TRAMP (Transparent Remote (file) Access, Multiple Protocol).  This extends directory path syntax to include FTP, SSH, Rsync and other protocols for accessing remote files.</p>
+<p>  An example of accessing a remote file on my development server <code>smeagol&lt;&#47;code&gt; from my laptop:</p>
+<pre class="example">&#47;ssh:gregj@smeagol:work&#47;client1&#47;web&#47;index.php<br />
+&lt;&#47;pre&gt;</p>
+<p>  A directory on an FTP server is accessed the same way:</p>
+<pre class="example">&#47;ftp:ftpuser@ftp.example.com:<br />
+&lt;&#47;pre&gt;</p>
+<p>  Even sudo is considered a &#39;protocol&#39;; so to gain root access without leaving the comfort of your emacs session, use</p>
+<pre class="example">&#47;sudo::&#47;etc&#47;hosts<br />
+&lt;&#47;pre&gt;</p>
+<p>  Emacs even helps you browse remote servers, providing the same name completion you get on your local directories.</p>
+<h4 id="sec-1">The amazing combo of TRAMP and shell commands&lt;&#47;h4&gt;</p>
+<p>  As wonderful as all this is, we are still in the realm of &quot;mere&quot; GUI editors that can browse remote servers. But we are dealing with emacs, the superset of all editors, so we expect even more.</p>
+<p>  Imagine we are looking at a directory on a remote server at <code>&#47;ssh:myuser@remote.com:web&#47;public<em>html&lt;&#47;code&gt;, and decide to type</p>
+<pre class="example">M-x shell<br />
+&lt;&#47;pre&gt;</p>
+<p>  What happens? Why, emacs looks at our current directory, sees that it is a TRAMP remote path, and just does the Right Thing&trade;: in this case, invokes ssh, sets the directory on the remote server to ~myuser&#47;web&#47;public</em>html, and sets us at the shell prompt.</p>
+<p>  Similarly, if we invoke version control (<code>vc-dir&lt;&#47;code&gt;, for example), or recursive grep (<code>rgrep&lt;&#47;code&gt;), or most other shell-based commands, emacs will open a secure shell first, then run the vc command (<code>svn&lt;&#47;code&gt;, <code>git&lt;&#47;code&gt;, etc) or <code>grep&lt;&#47;code&gt; <b>on the remote server!!&lt;&#47;b&gt; So for example, if I innocently invoke <code>rgrep&lt;&#47;code&gt; at the root of a remote WordPress installation, the grep command looks through all the files from the remote server. If on the other hand I were accessing the server using something like <a href="http:&#47;&#47;fuse.sourceforge.net&#47;sshfs.html">SSHFS&lt;&#47;a&gt;, all those files would be transferred to my local machine first and then searched!</p>
+<h4 id="sec-3">Some examples &lt;&#47;h4&gt;</p>
+<p>  I&#39;ll save my favorite uses of this magic called Dired with TRAMP for last.  I often need to access a development system or a live WordPress installation remotely. To access the SQL client, I found I often had to browse for the WordPress config file, open it, search for the database access info, open a SQL session using <code>M-x sql-mysql&lt;&#47;code&gt; and fill in all the prompts to authenticate to the MySQL server.  It&#39;s great that emacs with TRAMP starts a shell on the remote machine, and initiates the mysql client on that machine.  But emacs allows you to do damn near anything you can imagine, so I realized I could write a function that does the following:</p>
+<ol>
+<li>
+    Looks for wp-config.php in the current directory<br />
+  &lt;&#47;li&gt;</p>
+<li>
+    If not found, moves up a directory until it either finds the file or reaches the root of the filesystem<br />
+  &lt;&#47;li&gt;</p>
+<li>
+    If found, opens the config file and parses the database authentication parameters<br />
+  &lt;&#47;li&gt;</p>
+<li>
+    Feeds those parameters to the sql-mysql function and<br />
+  &lt;&#47;li&gt;</p>
+<li>
+    plops me into the MySQL prompt all logged in and ready to go!</p>
+<p>  &lt;&#47;li&gt;<br />
+&lt;&#47;ol&gt;</p>
+<p>Another example: my iPod Touch has an SSH server running on it (don&#39;t ask me how it got there). I have discovered that many apps use SQLite to store their data.  I have been losing weight lately, and have been using the excellent <a href="http:&#47;&#47;www.loseit.com&#47;">Lose It!&lt;&#47;a&gt; app to track my meals and exercise.  The app gives me nice weekly summaries of my caloric intake, but does not give a weekly summary of my aerobic exercise.  Here&#39;s how I get that information now:</p>
+<ol>
+<li>
+    I have a nice bookmark to the Lose It! application directory at<br />
+    <code>&#47;scpc:mobile@172.16.17.118:&#47;var&#47;mobile&#47;Applications&#47;C6503545-700B-4395-9C8B-FE5B75CF6CD8&#47;&lt;&#47;code&gt;,<br />
+    so I hit the Return key on that bookmark and wait for Dired to show me the files there.<br />
+  &lt;&#47;li&gt;</p>
+<li>
+    Browse to the Documents directory, wherein is stored the database for my personal history<br />
+  &lt;&#47;li&gt;</p>
+<li>
+    Invoke <code>M-x sql-sqlite&lt;&#47;code&gt; and enter the database file <code>UserDatabaseV1.sql&lt;&#47;code&gt; (using dabbrev as a shortcut)<br />
+  &lt;&#47;li&gt;</p>
+<li>
+    Wait for the SQLite prompt to appear, and run a lovely little SQL query using a YASnippets shortcut: </p>
+<p>  &lt;&#47;li&gt;<br />
+&lt;&#47;ol&gt;</p>
+<pre class="src src-sql"><span style="color: #a020f0;">SELECT&lt;&#47;span&gt; <span style="color: #228b22;">date&lt;&#47;span&gt;(<span style="color: #0000ff;">&#39;2001-01-01&#39;&lt;&#47;span&gt;, <span style="color: #0000ff;">&#39;+&#39;&lt;&#47;span&gt; || <span style="color: #228b22;">Date&lt;&#47;span&gt; || <span style="color: #0000ff;">&#39; day&#39;&lt;&#47;span&gt;, <span style="color: #0000ff;">&#39;-1 day&#39;&lt;&#47;span&gt;, <span style="color: #0000ff;">&#39;weekday 1&#39;&lt;&#47;span&gt;, <span style="color: #0000ff;">&#39;-7 day&#39;&lt;&#47;span&gt;) <span style="color: #a020f0;">AS&lt;&#47;span&gt; Weekdate, strftime(<span style="color: #0000ff;">&#39;%W&#39;&lt;&#47;span&gt;,<span style="color: #228b22;">date&lt;&#47;span&gt;(<span style="color: #0000ff;">&#39;2001-01-01&#39;&lt;&#47;span&gt;, <span style="color: #0000ff;">&#39;+&#39;&lt;&#47;span&gt; || <span style="color: #228b22;">Date&lt;&#47;span&gt; || <span style="color: #0000ff;">&#39; day&#39;&lt;&#47;span&gt;, <span style="color: #0000ff;">&#39;-1 day&#39;&lt;&#47;span&gt;)) <span style="color: #a020f0;">AS&lt;&#47;span&gt; Week,   ExerciseName, ExerciseCategoryId, <span style="color: #da70d6;">SUM&lt;&#47;span&gt;(Minutes), <span style="color: #da70d6;">SUM&lt;&#47;span&gt;(CaloriesBurned)   <span style="color: #a020f0;">FROM&lt;&#47;span&gt; ExerciseLogEntries  <span style="color: #a020f0;">GROUP&lt;&#47;span&gt; <span style="color: #a020f0;">BY&lt;&#47;span&gt; Week;<br />
+&lt;&#47;pre&gt;</p>
+<h4 id="sec-4">Summary &lt;&#47;h4&gt;</p>
+<p>I hope that this post gives an idea of the power of TRAMP on emacs.  It should at least explain the occasional ecstatic post you may see from your geekier tweeps.</p>
+<p>As a bonus, here&#39;s what the above examples look like in use: it&#39;s unbelievable how fast emacs makes you after a quick 15 years of study.</p>
+<p><object width="640" height="505"><param name="movie" value="http:&#47;&#47;www.youtube.com&#47;v&#47;UjPasLGWzD0&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b">&lt;&#47;param&gt;<param name="allowFullScreen" value="true">&lt;&#47;param&gt;<param name="allowscriptaccess" value="always">&lt;&#47;param&gt;<embed src="http:&#47;&#47;www.youtube.com&#47;v&#47;UjPasLGWzD0&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b" type="application&#47;x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="505">&lt;&#47;embed&gt;&lt;&#47;object&gt;</p>
+<p>  And here&#39;s my emacs lisp code that opens up a SQL prompt for any WordPress installation.  To use, eval the code and invoke <code>M-x gjg&#47;sql-mysql-wordpress&lt;&#47;code&gt;</p>
+<pre class="src src-emacs-lisp">(<span style="color: #a020f0;">defun&lt;&#47;span&gt; <span style="color: #0000ff;">gjg&#47;parse-wp-config-db&lt;&#47;span&gt; (wpconfig-path)<br />
+  <span style="color: #0000ff;">&quot;Read in and parse the DB settings from a WordPress config file; binds &#39;global&#39; vars for use by sql-mode&quot;&lt;&#47;span&gt;<br />
+  (<span style="color: #a020f0;">save-excursion&lt;&#47;span&gt; <span style="color: #b22222;">;; &lt;&#47;span&gt;<span style="color: #b22222;">will restore current buffer and default dir afterwards<br />
+  &lt;&#47;span&gt;    (set-buffer (get-buffer-create (generate-new-buffer-name <span style="color: #0000ff;">&quot; wp-config.php&quot;&lt;&#47;span&gt;)))<br />
+  (insert-file-contents wpconfig-path)<br />
+  <span style="color: #b22222;">;; &lt;&#47;span&gt;<span style="color: #b22222;">in regex: subexpr 1 is variable name, subexpr 3 is value: DB<em>{HOST,NAME,PASSWORD,USER}<br />
+  &lt;&#47;span&gt;    (<span style="color: #a020f0;">while&lt;&#47;span&gt; (search-forward-regexp <span style="color: #0000ff;">&quot;define\s<em>(\s</em>[&#39;\&quot;]&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">(&lt;&#47;span&gt;<span style="color: #0000ff;">DB</em>&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">(&lt;&#47;span&gt;<span style="color: #0000ff;">HOST&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">|&lt;&#47;span&gt;<span style="color: #0000ff;">NAME&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">|&lt;&#47;span&gt;<span style="color: #0000ff;">PASSWORD&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">|&lt;&#47;span&gt;<span style="color: #0000ff;">USER&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">)&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">)&lt;&#47;span&gt;<span style="color: #0000ff;">[&#39;\&quot;]\s<em>,\s</em>[&#39;\&quot;]&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">(&lt;&#47;span&gt;<span style="color: #0000ff;">[&lt;&#47;span&gt;<span style="color: #0000ff;">^&lt;&#47;span&gt;<span style="color: #0000ff;">&#39;\&quot;]<em>&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">\&lt;&#47;span&gt;<span style="color: #0000ff; font-weight: bold;">)&lt;&#47;span&gt;<span style="color: #0000ff;">[&#39;\&quot;]\s</em>)&quot;&lt;&#47;span&gt; (point-max) 42   )<br />
+  (<span style="color: #a020f0;">cond&lt;&#47;span&gt;<br />
+  ((equal <span style="color: #0000ff;">&quot;DB<em>HOST&quot;&lt;&#47;span&gt; (match-string-no-properties 1))<br />
+  (setq sql-server (match-string-no-properties 3)))<br />
+  ((equal <span style="color: #0000ff;">&quot;DB</em>NAME&quot;&lt;&#47;span&gt; (match-string-no-properties 1))<br />
+  (setq sql-database (match-string-no-properties 3)))<br />
+  ((equal <span style="color: #0000ff;">&quot;DB<em>PASSWORD&quot;&lt;&#47;span&gt; (match-string-no-properties 1))<br />
+  (setq sql-password (match-string-no-properties 3)))<br />
+  ((equal <span style="color: #0000ff;">&quot;DB</em>USER&quot;&lt;&#47;span&gt; (match-string-no-properties 1))<br />
+  (setq sql-user (match-string-no-properties 3)))))<br />
+  (kill-buffer )))</p>
+<p>  (<span style="color: #a020f0;">defun&lt;&#47;span&gt; <span style="color: #0000ff;">gjg&#47;sql-mysql-wordpress&lt;&#47;span&gt; ()<br />
+  <span style="color: #0000ff;">&quot;Find WordPress config file in current tree, log into WP database if found.&quot;&lt;&#47;span&gt;<br />
+  (interactive)<br />
+  (<span style="color: #a020f0;">let&lt;&#47;span&gt; ((mypath (locate-dominating-file default-directory <span style="color: #0000ff;">&quot;wp-config.php&quot;&lt;&#47;span&gt;)))<br />
+  (<span style="color: #a020f0;">if&lt;&#47;span&gt; mypath<br />
+  (<span style="color: #a020f0;">progn&lt;&#47;span&gt;<br />
+  (gjg&#47;parse-wp-config-db (concat mypath <span style="color: #0000ff;">&quot;wp-config.php&quot;&lt;&#47;span&gt;))<br />
+  (pop-to-buffer (sql-connect-mysql))<br />
+  (setq sql-interactive-product &#39;mysql)<br />
+  (setq sql-buffer (current-buffer))<br />
+  (sql-interactive-mode)<br />
+  (<span style="color: #a020f0;">let*&lt;&#47;span&gt; ((match (string-match (nth 0 tramp-file-name-structure) mypath))<br />
+  (myformat (<span style="color: #a020f0;">if&lt;&#47;span&gt; (eq nil match)<br />
+  (format <span style="color: #0000ff;">&quot; WordPress: local; %s; dbhost %s &quot;&lt;&#47;span&gt;<br />
+  mypath<br />
+  sql-server<br />
+  )<br />
+  (format <span style="color: #0000ff;">&quot; WordPress: Remote %s@%s %s; dbhost %s &quot;&lt;&#47;span&gt;<br />
+  (match-string (nth 2 tramp-file-name-structure) mypath)<br />
+  (match-string (nth 3 tramp-file-name-structure) mypath)<br />
+  (match-string (nth 4 tramp-file-name-structure) mypath)<br />
+  sql-server))))<br />
+  (setq header-line-format myformat))<br />
+  )<br />
+  (message <span style="color: #0000ff;">&quot;Did not find wp-config.php in current path&quot;&lt;&#47;span&gt;))<br />
+  ))<br />
+&lt;&#47;pre&gt;</p>
+<p> LocalWords:  Dired emacs SQL Rsync smeagol pre rgrep WordPress MySQL iPod<br />
+ LocalWords:  SQLite</p></p>
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page7">Older</a>
+  
+  
+    
+      <a class="pagination-item newer" href="/page5">Newer</a>
+    
+  
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      How to upgrade Wordpress SAFELY using Subversion and Rsync &middot; Gregory Grubbs Blog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="post">
+  <h1 class="post-title">How to upgrade Wordpress SAFELY using Subversion and Rsync</h1>
+  <span class="post-date">10 Sep 2008</span>
+  <p>I keep all my Wordpress projects in a Subversion repository.  I also have a snapshot of unmodified 'vanilla' releases kept in the same repository.</p>
+
+<p>Now theoretically I should simply be able to use the svn merge command in a working directory.  But I have encountered serious problems, including file corruption warnings, when using svn merge in an actively developed working directory.  Additionally, svn merge will delete files and directories that you added to the core Wordpress install.</p>
+
+<p>The method outlined here will be safe <strong>even if you have hacked core    Wordpress files<&#47;strong>, as long as you are very careful in constructing your rsync command.</p>
+
+<p><ol>
+<li> Import and tag the latest Wordpress release into the repository
+<pre class="src"><span style="color: #da70d6;">cd&lt;&#47;span&gt; &#47;tmp<br />
+tar zxf &#47;path&#47;to&#47;archive&#47;wordpress-2.6.2.tar.gz<br />
+    OR<br />
+unzip &#47;path&#47;to&#47;archive&#47;wordpress-2.6.2.zip<br />
+svn import -m <span style="color: #0000ff;">&quot;Vanilla 2.6.2&quot;&lt;&#47;span&gt; wordpress file:&#47;&#47;&#47;repository&#47;wordpress&#47;tags&#47;2.6.2&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> Remove the directory in &#47;tmp
+<pre class="src">rm -rf &#47;tmp&#47;wordpress&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> Check out a fresh copy of your Wordpress project, and export a copy of the latest vanilla Wordpress
+<pre class="src"><span style="color: #da70d6;">cd&lt;&#47;span&gt; &#47;tmp<br />
+svn co --ignore-externals file:&#47;&#47;&#47;repository&#47;wordpress&#47;projects&#47;myhappyblog<br />
+svn export file:&#47;&#47;&#47;repository&#47;wordpress&#47;tags&#47;2.6.2 wordpress-2.6.2&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> Do a <strong>dry run&lt;&#47;strong&gt; of rsync, starting with something like the following
+<pre class="src">rsync --dry-run -av --delete --svn-exclude --exclude <span style="color: #0000ff;">&#39;.svn&#47;&#39;&lt;&#47;span&gt; --exclude favicon.ico wordpress-2.6.2&#47; myhappyblog&#47;|less -SiX&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> Now begins an iterative process &ndash; carefully examine the output from the above rsync dry run, <strong>paying special attention to files       that will be deleted&lt;&#47;strong&gt;, since those will show you directories and files you have added.  Add those directories or files as required using multiple &#39;&ndash;exclude&#39; options.  Here is an example from a recent upgrade I did:
+<pre class="src">rsync --dry-run -av --delete --svn-exclude --exclude <span style="color: #0000ff;">&#39;.svn&#47;&#39;&lt;&#47;span&gt; --exclude favicon.ico --exclude <span style="color: #0000ff;">&#39;images&#47;&#39;&lt;&#47;span&gt; --exclude <span style="color: #0000ff;">&#39;wp-content&#47;plugins&#47;podpress&#39;&lt;&#47;span&gt; --exclude <span style="color: #0000ff;">&#39;wp-content&#47;themes&#47;sandbox&#39;&lt;&#47;span&gt; --exclude <span style="color: #0000ff;">&#39;wp-content&#47;uploads&#39;&lt;&#47;span&gt; wordpress-2.6.2&#47; myhappyblog&#47;|less -SiX&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> Once you are satisfied that you are not asking rsync to delete files and directories you need, run the command without &#39;&ndash;dry-run&#39;
+<pre class="src">rsync -av --delete --svn-exclude --exclude <span style="color: #0000ff;">&#39;.svn&#47;&#39;&lt;&#47;span&gt; --exclude favicon.ico --exclude <span style="color: #0000ff;">&#39;images&#47;&#39;&lt;&#47;span&gt; --exclude <span style="color: #0000ff;">&#39;wp-content&#47;plugins&#47;podpress&#39;&lt;&#47;span&gt; --exclude <span style="color: #0000ff;">&#39;wp-content&#47;themes&#47;sandbox&#39;&lt;&#47;span&gt; --exclude <span style="color: #0000ff;">&#39;wp-content&#47;uploads&#39;&lt;&#47;span&gt; wordpress-2.6.2&#47; myhappyblog&#47;&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> Now change to your project working directory and look at the output of &#39;svn stat&#39;, here including sample output:
+<pre class="src">svn stat</p>
+<p>M      wp-login.php<br />
+M      wp-includes&#47;post.php<br />
+M      wp-includes&#47;version.php<br />
+M      wp-includes&#47;query.php<br />
+M      wp-includes&#47;formatting.php<br />
+M      wp-includes&#47;pluggable.php<br />
+M      wp-includes&#47;widgets.php<br />
+M      wp-settings.php<br />
+M      wp-admin&#47;includes&#47;template.php<br />
+M      wp-admin&#47;includes&#47;image.php<br />
+M      wp-admin&#47;import&#47;textpattern.php<br />
+M      wp-admin&#47;css&#47;press-this-ie.css&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> (conditional) In major upgrades, there will be Wordpress core file deletions and additions.  Handling these will require an extra couple commands, shown below.  These commands are only necessary if there are additions and deletions.
+<pre class="src"><span style="color: #b22222;"># &lt;&#47;span&gt;<span style="color: #b22222;">tell repository about deleted files that were removed by rsync<br />
+&lt;&#47;span&gt;svn remove --force <span style="color: #ff00ff;"><code>svn stat |egrep &#39;^\!&#39; | cut -d&#39; &#39; -f2-999</code>&lt;&#47;span&gt;<br />
+<span style="color: #b22222;"># &lt;&#47;span&gt;<span style="color: #b22222;">add new files to repository<br />
+&lt;&#47;span&gt;svn add <span style="color: #ff00ff;"><code>svn stat|egrep &#39;^\?&#39; | cut -d&#39; &#39; -f2-999</code>&lt;&#47;span&gt;&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> You may choose to look through all the changes, or you may decide that the files that have been changed are safe (ie, unhacked Wordpress core files).Now you are ready to commit the changes to the repository.
+<pre class="src">svn diff | less <span style="color: #b22222;"># &lt;&#47;span&gt;<span style="color: #b22222;">optional<br />
+&lt;&#47;span&gt;svn commit -m <span style="color: #0000ff;">&quot;Upgraded to Wordpress 2.6.2&quot;&lt;&#47;span&gt;&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> At long last, you can go to the working directory where you are actively developing, and update that.  Once you have tested thoroughly, you will be ready to update your live site (possibly with the same &#39;svn update&#39; command).
+<pre class="src"><span style="color: #da70d6;">cd&lt;&#47;span&gt; &#47;path&#47;to&#47;my&#47;development&#47;myhappyblog<br />
+svn up&lt;&#47;pre&gt;<br />
+&lt;&#47;li&gt;</p>
+<li> Repeat from Step 3 for each of your SVN-managed Wordpress projects!&lt;&#47;li&gt;
+<li> Drink.  Pray that Wordpress is not upgraded for at least another 6 months.&lt;&#47;li&gt;<br />
+&lt;&#47;ol&gt;</p></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//development/emacs/android/2010/09/11/tips-on-android-development-using-emacs/">
+            Tips on Android Development Using Emacs
+            <small>11 Sep 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//emacs/2010/05/23/10-tips-emacs-windows/">
+            10 Tips for Powerful Emacs on Windows
+            <small>23 May 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//development/wordpress/emacs/2009/11/15/snippets-with-emacs-lisp-power/">
+            Snippets with Emacs Lisp Power
+            <small>15 Nov 2009</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>

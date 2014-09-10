@@ -1,0 +1,950 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>Gregory Grubbs Blog</title>
+ <link href="http://gregorygrubbs.com/atom.xml" rel="self"/>
+ <link href="http://gregorygrubbs.com/"/>
+ <updated>2014-09-09T22:45:16-07:00</updated>
+ <id>http://gregorygrubbs.com</id>
+ <author>
+   <name>Gregory Grubbs</name>
+   <email>gregoryg@dynapse.com</email>
+ </author>
+
+ 
+ <entry>
+   <title>Tips on Android Development Using Emacs</title>
+   <link href="http://gregorygrubbs.com//development/emacs/android/2010/09/11/tips-on-android-development-using-emacs/"/>
+   <updated>2010-09-11T10:32:32-07:00</updated>
+   <id>http://gregorygrubbs.com/development/emacs/android/2010/09/11/tips-on-android-development-using-emacs</id>
+   <content type="html">&lt;p&gt;Android using Emacs&lt;/p&gt;
+
+&lt;p&gt;&lt;div id=&quot;content&quot;&gt;
+&lt;div id=&quot;text-1&quot;&gt;
+&lt;p&gt;For the intrepid Emacs user, here are some tips for doing Android development without Eclipse. I am working on a follow-up post with some general Android SDK tips.&lt;/p&gt;
+&lt;p&gt;&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;outline-container-1_1&quot;&gt;
+&lt;h3 id=&quot;sec-1_1&quot;&gt;Emacs prerequisites&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;text-1_1&quot;&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;github.com&amp;#47;remvee&amp;#47;android-mode&amp;#47;blob&amp;#47;master&amp;#47;android-mode.el&quot;&gt;android-mode&amp;lt;&amp;#47;a&amp;gt;&lt;br /&gt;
+This mode gives you the following interactive commands:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;M-x android-start-emulator&amp;lt;&amp;#47;code&amp;gt; Start the Android SDK emulator from emacs&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;code&gt;M-x android-start-ddms&amp;lt;&amp;#47;code&amp;gt; Start the Android debugger&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;code&gt;M-x android-logcat&amp;lt;&amp;#47;code&amp;gt; Like syslog for Android&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;code&gt;M-x android-ant&amp;lt;&amp;#47;code&amp;gt; Run any ant task in the current project directory&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;android.el&lt;br /&gt;
+This is a file included in the Android SDK. It duplicates some of the functionality of android-mode, but adds &lt;code&gt;M-x android-jdb&amp;lt;&amp;#47;code&amp;gt;, which starts the JDB debugger once you have DDMS running.Load it from {SDK dir}&amp;#47;tools&amp;#47;lib&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;JDE&lt;br /&gt;
+Optional, but it&amp;#39;s great for java code. Required to use beanshell shortcuts like the import statement command below (Generate and insert import statements)&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;Typical emacs setup cruft&lt;br /&gt;
+Here&amp;#39;s what I have in my init file for Android:&lt;/p&gt;
+&lt;pre&gt;(add-to-list &amp;#39;load-path &lt;span style=&quot;color: #bc8f8f;&quot;&gt;&amp;quot;~&amp;#47;emacs&amp;#47;android-mode&amp;quot;&amp;lt;&amp;#47;span&amp;gt;)&lt;br /&gt;
+        (&lt;span style=&quot;color: #a020f0;&quot;&gt;require&amp;lt;&amp;#47;span&amp;gt; &amp;#39;&lt;span style=&quot;color: #5f9ea0;&quot;&gt;android-mode&amp;lt;&amp;#47;span&amp;gt;)&lt;br /&gt;
+        (setq android-mode-sdk-dir &lt;span style=&quot;color: #bc8f8f;&quot;&gt;&amp;quot;~&amp;#47;work&amp;#47;android&amp;#47;android&amp;quot;&amp;lt;&amp;#47;span&amp;gt;)&lt;br /&gt;
+        (add-hook &amp;#39;gud-mode-hook&lt;br /&gt;
+            (&lt;span style=&quot;color: #a020f0;&quot;&gt;lambda&amp;lt;&amp;#47;span&amp;gt; ()&lt;br /&gt;
+            (add-to-list &amp;#39;gud-jdb-classpath &lt;span style=&quot;color: #bc8f8f;&quot;&gt;&amp;quot;&amp;#47;home&amp;#47;gregj&amp;#47;work&amp;#47;android-sdk-linux&lt;em&gt;86&amp;#47;platforms&amp;#47;android-7&amp;#47;android.jar&amp;quot;&amp;lt;&amp;#47;span&amp;gt;)&lt;br /&gt;
+            ))&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ol&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;
+&amp;lt;div id=&amp;quot;outline-container-1&lt;/em&gt;2&amp;quot;&amp;gt;
+&lt;h3 id=&quot;sec-1_2&quot;&gt;Launch the emulator&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;text-1_2&quot;&gt;
+&lt;p&gt;Although you can start the emulator from within emacs using android-mode: &lt;code&gt;M-x android-start-emulator&amp;lt;&amp;#47;code&amp;gt;&lt;/p&gt;
+&lt;p&gt;I prefer to launch from the shell, since this allows me to exit emacs without having to restart the emulator, e.g.:&lt;/p&gt;
+&lt;pre&gt;emulator -avd starter-21 -partition-size 128 &amp;gt;&amp;#47;dev&amp;#47;null &amp;amp;&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;outline-container-1_3&quot;&gt;
+&lt;h3 id=&quot;sec-1_3&quot;&gt;Create a project&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;text-1_3&quot;&gt;
+&lt;p&gt;Instead of using the New Project wizard in Eclipse, use these steps to create an Android project using the shell:&lt;/p&gt;
+&lt;pre&gt;cd {project directory}&lt;br /&gt;
+    mkdir HelloAndroid&lt;br /&gt;
+    cd HelloAndroid&lt;br /&gt;
+    android create project --name HelloAndroid --target android-7 --path . --package home.hoochiepep.HelloAndroid --activity HelloAndroid&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+Change =--target=, =--package=, and =--activity= parameters as appropriate.&lt;/p&gt;
+&lt;p&gt;To get a list of valid targets for your SDK, use&lt;/p&gt;
+&lt;pre&gt;android list&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;outline-container-1_3_1&quot;&gt;
+&lt;h3&gt;Specify the application name&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;div&gt;To change the name of the application, edit {project root}&amp;#47;res&amp;#47;values&amp;#47;strings.xml:&lt;/p&gt;
+&lt;pre class=&quot;src src-xml&quot;&gt;&amp;lt;&lt;span style=&quot;color: #0000ff;&quot;&gt;string&amp;lt;&amp;#47;span&amp;gt; &lt;span style=&quot;color: #b8860b;&quot;&gt;name&amp;lt;&amp;#47;span&amp;gt;=&lt;span style=&quot;color: #bc8f8f;&quot;&gt;&amp;quot;app&lt;em&gt;name&amp;quot;&amp;lt;&amp;#47;span&amp;gt;&amp;gt;Hello, Android&amp;lt;&amp;#47;&lt;span style=&quot;color: #0000ff;&quot;&gt;string&amp;lt;&amp;#47;span&amp;gt;&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;
+&amp;lt;div id=&amp;quot;outline-container-1&lt;/em&gt;3&lt;em&gt;2&amp;quot;&amp;gt;
+&lt;h3&gt;Specify a minimum SDK level&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;div&gt;The Eclipse New Project wizard includes a Min SDK Version field. To set this without the wizard, add a line to AndroidManifest.xml as a child of manifest:&lt;/p&gt;
+&lt;pre class=&quot;src src-xml&quot;&gt;&amp;lt;&lt;span style=&quot;color: #0000ff;&quot;&gt;uses-sdk&amp;lt;&amp;#47;span&amp;gt; &lt;span style=&quot;color: #da70d6;&quot;&gt;android&amp;lt;&amp;#47;span&amp;gt;:&lt;span style=&quot;color: #b8860b;&quot;&gt;minSdkVersion&amp;lt;&amp;#47;span&amp;gt;=&lt;span style=&quot;color: #bc8f8f;&quot;&gt;&amp;quot;2&amp;quot;&amp;lt;&amp;#47;span&amp;gt; &amp;#47;&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;
+&amp;lt;div id=&amp;quot;outline-container-1&lt;/em&gt;4&amp;quot;&amp;gt;
+&lt;h3 id=&quot;sec-1_4&quot;&gt;Make an eclipse project ant-ready (do also when moved to a new machine)&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;text-1_4&quot;&gt;
+&lt;p&gt;Projects you pull from online will have been created using Eclipse, and will not have a build.xml file for ant.&lt;/p&gt;
+&lt;p&gt;Another common problem is that the file &lt;code&gt;local.properties&amp;lt;&amp;#47;code&amp;gt; will be missing. Running an update as shown here will fix both problems:&lt;/p&gt;
+&lt;pre&gt;android update project --path . --target android-7 --subprojects&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;outline-container-1_5&quot;&gt;
+&lt;h3 id=&quot;sec-1_5&quot;&gt;Generate and insert import statements&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;text-1_5&quot;&gt;
+&lt;p&gt;You will see references to a handy Eclipse command (invoked by Control-Shift-O) which adds import statements for referenced classes.&lt;/p&gt;
+&lt;p&gt;The emacs equivalent is found in jde-mode: &lt;code&gt;M-x jde-import-find-and-import&amp;lt;&amp;#47;code&amp;gt; (C-c C-v C-z). Make sure the classpath is set correctly prior to starting jde-mode&lt;/p&gt;
+&lt;p&gt;&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;outline-container-1_6&quot;&gt;
+&lt;h3 id=&quot;sec-1_6&quot;&gt;Use the debugger within Emacs&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;div id=&quot;text-1_6&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;Install the app on the emulator using &lt;code&gt;M-x android-ant-install&amp;lt;&amp;#47;code&amp;gt; (the &amp;#39;install&amp;#39; target uses the debug apk)&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Start ddms. There are no cmdline args, so you might as well use &lt;code&gt;M-x android-start-ddms&amp;lt;&amp;#47;code&amp;gt;&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;In the emulator, go to Dev Tools -&amp;gt; Development Settings and select the app as the debug app&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;In the emulator, start the app&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Look in the ddms window for the app&amp;#39;s debug port (usu. 8700 if the Dev Settings step was done)&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Start jdb by invoking &lt;code&gt;M-x android-jdb&amp;lt;&amp;#47;code&amp;gt; from android.elYou can also start jdb directly using the following command line params as a guide
+&lt;pre&gt;jdb -sourcepath&amp;#47;home&amp;#47;gregj&amp;#47;work&amp;#47;android&amp;#47;projects&amp;#47;NotepadCodeLab&amp;#47;Notepadv3&amp;#47;src -attach localhost:8700&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+Set breakpoints in JDB, like so&lt;/p&gt;
+&lt;pre&gt;stop in com.android.demo.notepad3.NoteEdit.onResume&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+If the project directory is set correctly in the jdb command, you will be able to set breakpoints by line using jde-mode&amp;#39;s &lt;code&gt;M-x gud-break&amp;lt;&amp;#47;code&amp;gt; (C-x space).&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;div&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>10 Tips for Powerful Emacs on Windows</title>
+   <link href="http://gregorygrubbs.com//emacs/2010/05/23/10-tips-emacs-windows/"/>
+   <updated>2010-05-23T12:24:14-07:00</updated>
+   <id>http://gregorygrubbs.com/emacs/2010/05/23/10-tips-emacs-windows</id>
+   <content type="html">&lt;p&gt;&lt;a title=&quot;Ladybug Liftoff&quot; href=&quot;http:&amp;#47;&amp;#47;flickr.com&amp;#47;photos&amp;#47;23084352@N00&amp;#47;403926829&quot;&gt;&lt;img src=&quot;http:&amp;#47;&amp;#47;farm1.static.flickr.com&amp;#47;163&amp;#47;403926829_cc213ee88b.jpg&quot; alt=&quot;&quot; &amp;#47;&gt;&lt;&amp;#47;a&gt;&lt;/p&gt;
+
+&lt;p&gt;I avoided using Microsoft Windows for almost 15 years, but with my&lt;br /&gt;
+new job at a Microsoft-enthralled development shop, those idyllic&lt;br /&gt;
+days have come to an abrupt end.  Because in the past I could always&lt;br /&gt;
+use my trusty Linux and OS X machines, I never did push past the&lt;br /&gt;
+hurdles of using Emacs on Windows.  My utter reliance on Org-mode,&lt;br /&gt;
+TRAMP, and Ediff (to name a few) made it essential to get Emacs&lt;br /&gt;
+working on Windows if at all possible.&lt;/p&gt;
+
+&lt;p&gt;Now I am using Emacs on Windows XP and Windows 7 on a daily basis,&lt;br /&gt;
+and am quite happy with the results.  It was not easy to get to the&lt;br /&gt;
+point of full functionality, so I wanted to share the magic that&lt;br /&gt;
+makes it all work.&lt;br /&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;a id=&quot;more-439&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;I have decided against using the Cygwin Emacs package for several reasons:&lt;/p&gt;
+
+&lt;p&gt;&lt;ul&gt;
+&lt;li&gt;Running a windowed&amp;#47;multi-frame&amp;#47;pretty version requires running&lt;br /&gt;
+Cygwin-X, which is quite a lot of overhead just to run Emacs. I&lt;br /&gt;
+have had a few interface and display problems lately with Cygwin-X&lt;br /&gt;
+also.&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;Cool-though-seldom-used features that work in the native port do&lt;br /&gt;
+not work in the Cygwin port: Window opacity control, for example&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;Using the native port means I can always be running the latest&lt;br /&gt;
+released version from gnu.org&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;The native port just runs faster&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;br /&gt;
+On the other hand, Cygwin does play a crucial role in making the&lt;br /&gt;
+native Emacs port work properly.  I have tried and hated using PuTTY&lt;br /&gt;
+and Plink, and various one-off ports of standard Unix commands.&lt;br /&gt;
+Using Cygwin and its package management makes all this&lt;br /&gt;
+much simpler and more reliable.&lt;/p&gt;
+&lt;p&gt;So all the hints given here use the &amp;quot;official&amp;quot; Emacs for Windows&lt;br /&gt;
+(sometimes referred to as NTEmacs), as well as Cygwin (with no&lt;br /&gt;
+dependency on Cygwin-X).&lt;/p&gt;
+&lt;p&gt;I really hope this helps some poor beleaguered Linux&amp;#47;OS X Emacs user&lt;br /&gt;
+make the giant backwards leap. With these tips and little helpers like&lt;br /&gt;
+&lt;a href=&quot;http:&amp;#47;&amp;#47;www.launchy.net&amp;#47;&quot;&gt;Launchy&amp;lt;&amp;#47;a&amp;gt;, you won&amp;#39;t even have to&lt;br /&gt;
+acknowledge that you&amp;#39;re running Windows!&lt;/p&gt;
+&lt;h2&gt;Software download links&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+Here&amp;#39;s where you will find all the software referenced in the tips:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;ftp.gnu.org&amp;#47;pub&amp;#47;gnu&amp;#47;emacs&amp;#47;windows&amp;#47;&quot;&gt;Emacs for Windows&amp;lt;&amp;#47;a&amp;gt;&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;www.cygwin.com&amp;#47;&quot;&gt;Cygwin&amp;lt;&amp;#47;a&amp;gt;&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;gnuwin32.sourceforge.net&amp;#47;&quot;&gt;GnuWin32&amp;lt;&amp;#47;a&amp;gt; for image libraries&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;a href=&quot;ftp:&amp;#47;&amp;#47;ftp.franken.de&amp;#47;pub&amp;#47;win32&amp;#47;develop&amp;#47;gnuwin32&amp;#47;cygwin&amp;#47;porters&amp;#47;Humblet_Pierre_A&amp;#47;V1.1&amp;#47;ispell-3.2.06-cygwin-1.3-bin.tar.gz&quot;&gt;ISpell package&amp;lt;&amp;#47;a&amp;gt;&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;files.emacsblog.org&amp;#47;ryan&amp;#47;elisp&amp;#47;maxframe.el&quot;&gt;Maxframe.el&amp;lt;&amp;#47;a&amp;gt;&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;mirror.cs.wisc.edu&amp;#47;pub&amp;#47;mirrors&amp;#47;ghost&amp;#47;ghostgum&amp;#47;gsv49w32.exe&quot;&gt;GSView&amp;lt;&amp;#47;a&amp;gt;&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #1: General Usage&amp;lt;&amp;#47;h2&amp;gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Execute runemacs.exe or emacsclientw.exe.  On your Linux and OS X&lt;br /&gt;
+systems, the binary names or emacs and emacsclient: just use the&lt;br /&gt;
+windows-specific wrappers included in the standard port when on MS Windows.&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;Add Cygwin &amp;#47;bin to exec-path.
+&lt;pre lang=&quot;Lisp&quot;&gt;      (if (file-directory-p &amp;quot;c:&amp;#47;cygwin&amp;#47;bin&amp;quot;)&lt;br /&gt;
+      (add-to-list &amp;#39;exec-path &amp;quot;c:&amp;#47;cygwin&amp;#47;bin&amp;quot;))&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #2: Make TRAMP work nicely -- and without PuTTY&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+There are people using PuTTY and Plink.exe to get this working, but&lt;br /&gt;
+I like using good old OpenSSH much better: no translation required&lt;br /&gt;
+for the keys I use, and I have it installed anyway in Cygwin.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Install Cygwin, including the OpenSSH package&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;In your Emacs init, set shell to bash
+&lt;pre lang=&quot;Lisp&quot;&gt;      (setq shell-file-name &amp;quot;bash&amp;quot;)&lt;br /&gt;
+      (setq explicit-shell-file-name shell-file-name)&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;In Emacs init, set tramp-default-method to &amp;quot;sshx&amp;quot; or &amp;quot;scpx&amp;quot;
+&lt;pre lang=&quot;Lisp&quot;&gt;      (cond  ((eq window-system &amp;#39;w32)&lt;br /&gt;
+      (setq tramp-default-method &amp;quot;scpx&amp;quot;))&lt;br /&gt;
+      (t&lt;br /&gt;
+      (setq tramp-default-method &amp;quot;scpc&amp;quot;)))&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;Windows 7 note: &amp;nbsp; I was unable to get this to work on Win7 until I set the runemacs.exe binary to run in Windows XP (Service Pack 3) compatibility mode.&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Test: Try &lt;code&gt;M-x shell&amp;lt;&amp;#47;code&amp;gt;, then visit a TRAMP site such as &lt;code&gt;&amp;#47;user@site:&amp;lt;&amp;#47;code&amp;gt; and try &lt;code&gt;M-x shell&amp;lt;&amp;#47;code&amp;gt; from there!&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #3: Use SVN and GIT without tears&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+Version control should work out of the box -- but SSH problems can&lt;br /&gt;
+interfere sometimes.  So once you get TRAMP working properly, you&lt;br /&gt;
+should have no problems with VC.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Install subversion and git from Cygwin&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Use built-in vc-dir, or psvn.el and magit.el&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #4: Display images in buffers, including doc-view&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+You may have noticed that your Windows Emacs has no ability to&lt;br /&gt;
+display images.  This is simply due to the fact that the port is&lt;br /&gt;
+not distributed with the libraries necessary to display them.&lt;/p&gt;
+&lt;p&gt;The solution is to visit the GnuWin32 link above, download the&lt;br /&gt;
+packages relevant to the types of images you want to display&lt;br /&gt;
+(including zlib1 for compressed images), and copy the DLLs into the&lt;br /&gt;
+bin directory of your Emacs installation (e.g, C:\Program&lt;br /&gt;
+Files\emacs23-2\bin).&lt;/p&gt;
+&lt;p&gt;Images will only be displayed after restarting Emacs.&lt;/p&gt;
+&lt;p&gt;Here&amp;#39;s a list of DLLs that I now have in my installation:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;jpeg62.dll&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libXpm.dll&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libjpeg-62.dll&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng-bcc.lib&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng.dll.a&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng.la&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng.lib&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng12-0.dll&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng12.def&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng12.dll&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng12.dll.a&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libpng12.la&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;libtiff3.dll&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;zlib1.dll (for compression, not images)&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #5: Use W3M&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+The W3M web browser works fine once you install the w3m binary --&lt;br /&gt;
+and once the image display step above is working, you will be able&lt;br /&gt;
+to display images in the W3M buffers as well.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Install w3m from Cygwin&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Test image display by hitting &lt;code&gt;T&amp;lt;&amp;#47;code&amp;gt; (w3m-toggle-inline-images)&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Example screenshot:&lt;br /&gt;
+&lt;a rel=&quot;attachment wp-att-450&quot; href=&quot;http:&amp;#47;&amp;#47;gregorygrubbs.com&amp;#47;emacs&amp;#47;10-tips-emacs-windows&amp;#47;attachment&amp;#47;emacs_pacman_google&amp;#47;&quot;&gt;&lt;img class=&quot;alignnone size-medium wp-image-450&quot; title=&quot;W3M Browser in Emacs&quot; src=&quot;http:&amp;#47;&amp;#47;gregorygrubbs.com&amp;#47;wp-content&amp;#47;uploads&amp;#47;2010&amp;#47;05&amp;#47;emacs_pacman_google-300x127.jpg&quot; alt=&quot;W3M Browser in Emacs&quot; width=&quot;300&quot; height=&quot;127&quot; &amp;#47;&gt;&amp;lt;&amp;#47;a&amp;gt;&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #6: Bring back Ediff and Smerge&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+Ediff is yet another thing which doesn&amp;#39;t work as it should.  You&lt;br /&gt;
+will get an error complaining about Dos-style versus Unix-style&lt;br /&gt;
+paths.  Fixing it is a simple matter of setting an environment variable.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Assure you have Cygwin&amp;#39;s diff package installed&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Set the Windows environment variable nodosfilewarning=1&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Restart Emacs, and verify that the environment variable is set by executing &lt;code&gt;M-x shell&amp;lt;&amp;#47;code&amp;gt;, then typing &lt;code&gt;env | grep dos&amp;lt;&amp;#47;code&amp;gt;, for example&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;&lt;strong&gt;Always, prior to running ediff&amp;lt;&amp;#47;strong&amp;gt;, execute &lt;code&gt;M-x shell&amp;lt;&amp;#47;code&amp;gt;&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #7: Spell using ISpell or Aspell&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+Fortunately very easy to get working by following &lt;a href=&quot;http:&amp;#47;&amp;#47;bria.nwood.org&amp;#47;node&amp;#47;49&quot;&gt;Brian Wood&amp;#39;s directions&amp;lt;&amp;#47;a&amp;gt; using the ISpell package for Cygwin linked above.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note added later:&amp;lt;&amp;#47;strong&amp;gt;&lt;/p&gt;
+&lt;p&gt;Aspell is even easier to use: just install aspell and the correct language(s) in Cygwin, then use the following in your emacs init:&lt;/p&gt;
+&lt;pre lang=&quot;Lisp&quot;&gt;(setq-default ispell-program-name &amp;quot;aspell&amp;quot;)&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #8: Maximized frame works using maxframe.el&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+Those of us who practice Distraction-Free Emacsing, or DFE, will&lt;br /&gt;
+lament the inability to maximize the frame as we can do on other&lt;br /&gt;
+systems (ie, a true maximized windows, with no OS window&lt;br /&gt;
+decoration).  The solution is provided by maxfame.el, linked above.&lt;/p&gt;
+&lt;p&gt;After loading maxframe.el, use &lt;code&gt;M-x maximize-frame&amp;lt;&amp;#47;code&amp;gt; and &lt;code&gt;M-x restore-frame&amp;lt;&amp;#47;code&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #9: Print on PostScript printers&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+And finally, printing.  Even this just didn&amp;#39;t work out of the box&lt;br /&gt;
+for me.  The solution was to use a nice little utility called&lt;br /&gt;
+GSPrint from the GSView package linked above.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Install Ghostscript in Cygwin&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Install GSView
+&lt;pre lang=&quot;Lisp&quot;&gt;      (when (and (string= (window-system) &amp;quot;w32&amp;quot;) (file-exists-p &amp;quot;c:&amp;#47;Program Files&amp;#47;Ghostgum&amp;#47;gsview&amp;#47;gsprint.exe&amp;quot;))&lt;br /&gt;
+      (progn&lt;br /&gt;
+      ;;  Windows printer&lt;br /&gt;
+      (setq-default ps-lpr-command (expand-file-name &amp;quot;c:&amp;#47;Program Files&amp;#47;Ghostgum&amp;#47;gsview&amp;#47;gsprint.exe&amp;quot;))&lt;br /&gt;
+      (setq-default ps-printer-name t)&lt;br /&gt;
+      (setq-default ps-printer-name-option nil)&lt;br /&gt;
+      (setq ps-lpr-switches &amp;#39;(&amp;quot;-query&amp;quot;)) ; show printer dialog&lt;br /&gt;
+      (setq ps-right-header &amp;#39;(&amp;quot;&amp;#47;pagenumberstring load&amp;quot; ps-time-stamp-mon-dd-yyyy))))&lt;br /&gt;
+      (if (eq window-system &amp;#39;x)&lt;br /&gt;
+      (setq ps-lpr-command &amp;quot;gtklp&amp;quot;))&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h2&gt;Tip #10: Some things Just Work&amp;trade;: Nifty Emacs 23 features that work &amp;quot;out of the box&amp;quot;&amp;lt;&amp;#47;h2&amp;gt;&lt;br /&gt;
+Bonus tip &amp;mdash; some things work already, no fiddling required!&lt;/p&gt;
+&lt;h3&gt;Select any font you want&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;M-x menu-set-font (choose something lovely like Consolas or Inconsolata ... or Comic Sans MS)&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Example font selection, cross-OS
+&lt;pre lang=&quot;Lisp&quot;&gt;      ;;* Font selection&lt;br /&gt;
+      (cond ((or (eq window-system &amp;#39;mac) (eq window-system &amp;#39;ns))&lt;br /&gt;
+      (set-face-font &amp;#39;default &amp;#39;&amp;quot;-apple-inconsolata-medium-r-normal--16-0-72-72-m-0-iso10646-1&amp;quot;))&lt;br /&gt;
+      ((eq window-system &amp;#39;w32)&lt;br /&gt;
+      (set-face-font &amp;#39;default &amp;#39;&amp;quot;-outline-Inconsolata-normal-normal-normal-mono-16-&lt;em&gt;-&lt;/em&gt;-&lt;em&gt;-c-&lt;/em&gt;-iso8859-1&amp;quot;))&lt;br /&gt;
+      ((and (eq window-system &amp;#39;x) (eq emacs-major-version 23))&lt;br /&gt;
+      (set-face-font &amp;#39;default &amp;#39;&amp;quot;-unknown-Inconsolata-normal-normal-normal-&lt;em&gt;-16-&lt;/em&gt;-&lt;em&gt;-&lt;/em&gt;-m-0-iso10646-1&amp;quot;)&lt;br /&gt;
+      (add-to-list &amp;#39;default-frame-alist &amp;#39;(font . &amp;quot;-unknown-Inconsolata-normal-normal-normal-&lt;em&gt;-16-&lt;/em&gt;-&lt;em&gt;-&lt;/em&gt;-m-0-iso10646-1&amp;quot;))&lt;br /&gt;
+      )&lt;br /&gt;
+      ((eq window-system &amp;#39;x)&lt;br /&gt;
+      (set-face-font &amp;#39;default &amp;#39;&amp;quot;10x20&amp;quot;)))&lt;/p&gt;
+&lt;p&gt;      (add-hook &amp;#39;before-make-frame-hook&lt;br /&gt;
+      (lambda ()&lt;br /&gt;
+      (set-frame-font &amp;quot;-unknown-Inconsolata-normal-normal-normal-&lt;em&gt;-16-&lt;/em&gt;-&lt;em&gt;-&lt;/em&gt;-m-0-iso10646-1&amp;quot;)&lt;br /&gt;
+      ))&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;&lt;code&gt;M-x grep&amp;lt;&amp;#47;code&amp;gt;, &lt;code&gt;M-x grep-find&amp;lt;&amp;#47;code&amp;gt;, &lt;code&gt;M-x rgrep&amp;lt;&amp;#47;code&amp;gt; and friends (as long as&lt;br /&gt;
+you have the &lt;code&gt;grep&amp;lt;&amp;#47;code&amp;gt; and &lt;code&gt;find&amp;lt;&amp;#47;code&amp;gt; commands installed!)&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;&lt;code&gt;M-x tetris&amp;lt;&amp;#47;code&amp;gt;, &lt;code&gt;M-x doctor&amp;lt;&amp;#47;code&amp;gt;, &lt;code&gt;M-x yow&amp;lt;&amp;#47;code&amp;gt;, &lt;code&gt;M-x butterfly&amp;lt;&amp;#47;code&amp;gt;&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;h3&gt;Frame transparency&amp;lt;&amp;#47;h3&amp;gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Transparent windows are not my favorite thing, as they tend to&lt;br /&gt;
+hamper DFE (see above).  But there are occasions, like copying text from a&lt;br /&gt;
+web page into an Emacs buffer, where it can come in quite handy.&lt;/p&gt;
+&lt;pre lang=&quot;Lisp&quot;&gt;      (defun set-transparency (alpha-level)&lt;br /&gt;
+      (interactive &amp;quot;p&amp;quot;)&lt;br /&gt;
+      (message (format &amp;quot;Alpha level passed in: %s&amp;quot; alpha-level))&lt;br /&gt;
+      (let ((alpha-level (if (&amp;lt; alpha-level 2)&lt;br /&gt;
+                (read-number &amp;quot;Opacity percentage: &amp;quot; 85)&lt;br /&gt;
+                alpha-level))&lt;br /&gt;
+                (myalpha (frame-parameter nil &amp;#39;alpha)))&lt;br /&gt;
+                (set-frame-parameter nil &amp;#39;alpha alpha-level))&lt;br /&gt;
+                (message (format &amp;quot;Alpha level is %d&amp;quot; (frame-parameter nil &amp;#39;alpha))))&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Snippets with Emacs Lisp Power</title>
+   <link href="http://gregorygrubbs.com//development/wordpress/emacs/2009/11/15/snippets-with-emacs-lisp-power/"/>
+   <updated>2009-11-15T00:00:51-08:00</updated>
+   <id>http://gregorygrubbs.com/development/wordpress/emacs/2009/11/15/snippets-with-emacs-lisp-power</id>
+   <content type="html">&lt;p&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;flickr.com&amp;#47;photos&amp;#47;26405526@N00&amp;#47;2188203168&quot; title=&quot;As RAW as Winter&quot;&gt;&lt;img src=&quot;http:&amp;#47;&amp;#47;farm3.static.flickr.com&amp;#47;2165&amp;#47;2188203168_86a4d818f4.jpg&quot; &amp;#47;&gt;&lt;&amp;#47;a&gt; &lt;/p&gt;
+
+&lt;p&gt;The YASnippet package for Emacs has some pretty awesome power for the developer, especially when you utilize the power of Emacs Lisp.  &lt;/p&gt;
+
+&lt;p&gt;&lt;object width=&quot;425&quot; height=&quot;344&quot;&gt;&lt;param name=&quot;movie&quot; value=&quot;http:&amp;#47;&amp;#47;www.youtube.com&amp;#47;v&amp;#47;HPT7pm8ot8M&amp;hl=en_US&amp;fs=1&amp;&quot;&gt;&lt;&amp;#47;param&gt;&lt;param name=&quot;allowFullScreen&quot; value=&quot;true&quot;&gt;&lt;&amp;#47;param&gt;&lt;param name=&quot;allowscriptaccess&quot; value=&quot;always&quot;&gt;&lt;&amp;#47;param&gt;&lt;embed src=&quot;http:&amp;#47;&amp;#47;www.youtube.com&amp;#47;v&amp;#47;HPT7pm8ot8M&amp;hl=en_US&amp;fs=1&amp;&quot; type=&quot;application&amp;#47;x-shockwave-flash&quot; allowscriptaccess=&quot;always&quot; allowfullscreen=&quot;true&quot; width=&quot;425&quot; height=&quot;344&quot;&gt;&lt;&amp;#47;embed&gt;&lt;&amp;#47;object&gt;&lt;/p&gt;
+
+&lt;p&gt;YASnippet was inspired by TextMate, which was inspired by Emacs, in a highly-out-of-equilibrium whirlwind of self-referential creativity.  &lt;/p&gt;
+
+&lt;p&gt;The screencast above uses a set of snippets I originally took from &lt;a href=&quot;http:&amp;#47;&amp;#47;top-frog.com&amp;#47;projects&amp;#47;wordpress-textmate-bundle&amp;#47;&quot;&gt;this WordPress TextMate bundle&lt;&amp;#47;a&gt;, created by Shawn Parker and Gordon Brander&lt;/p&gt;
+
+&lt;p&gt;The first snippet in the screencast illustrates YASnippet&#39;s mirrors with transformation, in a WordPress plugin template.  The snippet calls Emacs Lisp functions as the plugin name is filled in to create the plugin URI, the &quot;namespace&quot; (used here as a prefix for function and variable names), and the primary class name for the plugin. &lt;/p&gt;
+
+&lt;p&gt;The second snippet writes a function skeleton, then calls Emacs Lisp at the end to move the generated function outside the current scope into a correct position in the file.  This snippet uses YASnippet&#39;s fields with transformations syntax, but to do a sneaky thing: not transform the field, but move a region of generated text!&lt;/p&gt;
+
+&lt;p&gt;Following is the code for the snippets shown in the screencast, with no commentary.  So pipe up in the comments if you&#39;re curious about how something works!&lt;/p&gt;
+
+&lt;p&gt;&lt;pre lang=&quot;PHP&quot;&gt;&lt;/p&gt;
+
+&lt;h1&gt;-&lt;em&gt;- mode: snippet -&lt;/em&gt;-&lt;br /&gt;&lt;/h1&gt;
+
+&lt;h1&gt;name: WP Plugin&lt;br /&gt;&lt;/h1&gt;
+
+&lt;h1&gt;key: plugin&lt;br /&gt;&lt;/h1&gt;
+
+&lt;h1&gt;--&lt;br /&gt;&lt;/h1&gt;
+
+&lt;p&gt;&amp;#47;&lt;em&gt;&lt;br /&gt;
+Plugin Name: ${1:Plugin Name}&lt;br /&gt;
+Plugin URI: http:&amp;#47;&amp;#47;${2:dynapse.com&amp;#47;plugins&amp;#47;}${1:$(gjg&amp;#47;sanitize text)}&amp;#47;&lt;br /&gt;
+Description: ${3:Description}&lt;br /&gt;
+Version: ${4:1.0}&lt;br /&gt;
+Author: ${5:Gregory Grubbs}&lt;br /&gt;
+Author URI: http:&amp;#47;&amp;#47;${6:gregorygrubbs.com&amp;#47;}&lt;br /&gt;
+Namespace: ${1:$(gjg&amp;#47;acronyminize text)}_&lt;br /&gt;
+*&amp;#47;&lt;/p&gt;
+&lt;p&gt;class ${1:$(gjg&amp;#47;whitespace-to-underscore text)} {&lt;br /&gt;
+    &amp;#47;&lt;/em&gt;*&lt;br /&gt;
+     * constructor for $1&lt;br /&gt;
+     *&lt;br /&gt;
+     * The constructor is responsible for registering all hooks used&lt;br /&gt;
+     * by this class as as WordPress plugin&lt;br /&gt;
+     *&amp;#47;&lt;br /&gt;
+    function _&lt;em&gt;construct() {&lt;br /&gt;
+         $0&lt;br /&gt;
+    } &amp;#47;&amp;#47; constructor&lt;/p&gt;
+&lt;p&gt;}&lt;br /&gt;
+$${1:$(gjg&amp;#47;acronyminize text)} = new ${1:$(gjg&amp;#47;whitespace-to-underscore text)}();&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;Next, the add&lt;/em&gt;action snippet, which moves a generated function at the end:&lt;/p&gt;
+&lt;pre lang=&quot;PHP&quot;&gt;&lt;/p&gt;
+
+&lt;h1&gt;-&lt;em&gt;- mode: snippet -&lt;/em&gt;-&lt;br /&gt;&lt;/h1&gt;
+
+&lt;h1&gt;name: add_action&lt;br /&gt;&lt;/h1&gt;
+
+&lt;h1&gt;key: add_action&lt;br /&gt;&lt;/h1&gt;
+
+&lt;h1&gt;--&lt;br /&gt;&lt;/h1&gt;
+
+&lt;p&gt;add&lt;em&gt;action(&amp;#39;${1:init}&amp;#39;, array($this, &amp;#39;my&lt;/em&gt;${2:$1}&amp;#39;));&lt;br /&gt;
+${3:$$(gjg&amp;#47;move-next-sexp-past-current-scope)}&lt;br /&gt;
+function my_$1 () {&lt;br /&gt;
+}&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;And finally, (some of) the Emacs Lisp functions that the snippets call:&lt;/p&gt;
+&lt;pre lang=&quot;Lisp&quot;&gt;
+(defun gjg&amp;#47;acronyminize (text &amp;amp;optional do-capitalize)&lt;br /&gt;
+  &amp;quot;Make an acronym from the text&lt;br /&gt;
+do-capitalize: t means run text through capitalize function, nil will respect CamelCase&lt;br /&gt;
+&amp;quot;&lt;br /&gt;
+  (save-excursion&lt;br /&gt;
+    (setq case-fold-search nil)&lt;br /&gt;
+    (downcase&lt;br /&gt;
+     (replace-regexp-in-string&lt;br /&gt;
+      &amp;quot;[^A-Z]&amp;quot; &amp;quot;&amp;quot;&lt;br /&gt;
+      (if do-capitalize (capitalize text) text) nil t))))&lt;br /&gt;
+(defun gjg&amp;#47;move-next-sexp-past-current-scope ()&lt;br /&gt;
+  &amp;quot;kill sexp following point, move past current scope&amp;#47;sexp&amp;#47;function&amp;quot;&lt;br /&gt;
+  (beginning-of-line)&lt;br /&gt;
+  (let ((beg (point)))&lt;br /&gt;
+    (re-search-forward &amp;quot;^[ \t]*function[ \t]+[^}]+?}&amp;quot; (point-max) nil)&lt;br /&gt;
+    (mark-defun)&lt;br /&gt;
+    (kill-region (point) (mark)))&lt;br /&gt;
+  (forward-line)&lt;br /&gt;
+  (yank)&lt;br /&gt;
+  (indent-region (mark) (point)))&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>FAST file access with Emacs and ido-mode</title>
+   <link href="http://gregorygrubbs.com//development/emacs/2009/11/14/fast-file-access-with-emacs-and-ido-mode/"/>
+   <updated>2009-11-14T22:44:15-08:00</updated>
+   <id>http://gregorygrubbs.com/development/emacs/2009/11/14/fast-file-access-with-emacs-and-ido-mode</id>
+   <content type="html">&lt;p&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;flickr.com&amp;#47;photos&amp;#47;10226264@N04&amp;#47;2097587325&quot; title=&quot;18 ampolles&quot;&gt;&lt;img src=&quot;http:&amp;#47;&amp;#47;farm3.static.flickr.com&amp;#47;2254&amp;#47;2097587325_5861cc68ea.jpg&quot; &amp;#47;&gt;&lt;&amp;#47;a&gt;&lt;/p&gt;
+
+&lt;p&gt;One of the things that makes daily Emacs use so enjoyable is the availability of brilliant add-ons designed to make you work faster.  &lt;/p&gt;
+
+&lt;p&gt;Emacs with ido-mode fuzzy matching (or flex matching) makes it incredibly quick to navigate the file system using only the keyboard. But it does far more than that, allowing the emacs pilot to quickly find help, commands, variables and much more. This video shows the finer points of using ido-mode with flex matching.&lt;/p&gt;
+
+&lt;p&gt;It&#39;s all in the video - enjoy.&lt;/p&gt;
+
+&lt;p&gt;&lt;object width=&quot;425&quot; height=&quot;344&quot;&gt;&lt;param name=&quot;movie&quot; value=&quot;http:&amp;#47;&amp;#47;www.youtube.com&amp;#47;v&amp;#47;lsgPNVIMkIE&amp;hl=en_US&amp;fs=1&amp;&quot;&gt;&lt;&amp;#47;param&gt;&lt;param name=&quot;allowFullScreen&quot; value=&quot;true&quot;&gt;&lt;&amp;#47;param&gt;&lt;param name=&quot;allowscriptaccess&quot; value=&quot;always&quot;&gt;&lt;&amp;#47;param&gt;&lt;embed src=&quot;http:&amp;#47;&amp;#47;www.youtube.com&amp;#47;v&amp;#47;lsgPNVIMkIE&amp;hl=en_US&amp;fs=1&amp;&quot; type=&quot;application&amp;#47;x-shockwave-flash&quot; allowscriptaccess=&quot;always&quot; allowfullscreen=&quot;true&quot; width=&quot;425&quot; height=&quot;344&quot;&gt;&lt;&amp;#47;embed&gt;&lt;&amp;#47;object&gt;&lt;/p&gt;
+
+&lt;p&gt;Here are my current settings for ido-mode&lt;/p&gt;
+
+&lt;p&gt;&lt;pre lang=&quot;lisp&quot;&gt;
+;; do not confirm a new file or buffer&lt;br /&gt;
+(setq confirm-nonexistent-file-or-buffer nil)&lt;br /&gt;
+(require &amp;#39;ido)&lt;br /&gt;
+(ido-mode 1)&lt;br /&gt;
+(ido-everywhere 1)&lt;br /&gt;
+(setq ido-enable-flex-matching t)&lt;br /&gt;
+(setq ido-create-new-buffer &amp;#39;always)&lt;br /&gt;
+(setq ido-enable-tramp-completion nil)&lt;br /&gt;
+(setq ido-enable-last-directory-history nil)&lt;br /&gt;
+(setq ido-confirm-unique-completion nil) ;; wait for RET, even for unique?&lt;br /&gt;
+(setq ido-show-dot-for-dired t) ;; put . as the first item&lt;br /&gt;
+(setq ido-use-filename-at-point t) ;; prefer file names near point&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Get remote X Windows working in Ubuntu Karmic</title>
+   <link href="http://gregorygrubbs.com//development/emacs/2009/10/26/get-remote-x-working-in-karmic/"/>
+   <updated>2009-10-26T12:09:24-07:00</updated>
+   <id>http://gregorygrubbs.com/development/emacs/2009/10/26/get-remote-x-working-in-karmic</id>
+   <content type="html">&lt;p&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;flickr.com&amp;#47;photos&amp;#47;40418474@N00&amp;#47;2776450260&quot; title=&quot;El gegant &amp;#47;&amp;#47; The Giant&quot;&gt;&lt;img src=&quot;http:&amp;#47;&amp;#47;farm4.static.flickr.com&amp;#47;3082&amp;#47;2776450260_e35cd9a763.jpg&quot; &amp;#47;&gt;&lt;&amp;#47;a&gt;&lt;/p&gt;
+
+&lt;p&gt;One thing that troubled me moving to Ubuntu 9.10 Karmic Koala: my remote X applications stopped working with the error&lt;br /&gt;
+&lt;code&gt;X11 connection rejected because of wrong authentication&lt;&amp;#47;code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;a id=&quot;more-391&quot;&gt;&lt;/a&gt;&lt;br /&gt;
+The reason seems to be that Gnome moved the location of X authorization to [wherever-the-hell-i-dont-remember], whereas ssh and everything else still use the same location (&lt;code&gt;~&amp;#47;.Xauthority&lt;&amp;#47;code&gt;).  Note: I clearly forgot whatever it was I discovered about xauth, so please enlighten me in the comments, and I will update this exceedingly lame paragraph.&lt;/p&gt;
+
+&lt;p&gt;This is going to be tagged as an Emacs post because my principal reason to use remote X is Emacs&#39; awesome &lt;code&gt;make-frame-on-display&lt;&amp;#47;code&gt; command.&lt;/p&gt;
+
+&lt;p&gt;The bash script I use is saved in ~&amp;#47;bin&amp;#47;xauthmagic:&lt;/p&gt;
+
+&lt;p&gt;&lt;pre lang=&quot;bash&quot; line=&quot;1&quot;&gt;&lt;/p&gt;
+
+&lt;h1&gt;!&amp;#47;bin&amp;#47;bash&lt;br /&gt;&lt;/h1&gt;
+
+&lt;p&gt;xauth -f ~&amp;#47;.Xauthority list | grep -v &amp;#39;:0&amp;#39; | while read foo; do xauth add $foo; done&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;This means: look through all the xauth cookies in &lt;code&gt;~&amp;#47;.Xauthority&amp;lt;&amp;#47;code&amp;gt;, remove the &amp;#39;:0&amp;#39; (local) display cookie, take the remaining cookies and run the &lt;code&gt;xauth&amp;lt;&amp;#47;code&amp;gt; command on them.&lt;/p&gt;
+&lt;p&gt;The steps I take to use this:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;On my remote host (emunah), start an ssh section forwarding X:
+&lt;pre lang=&quot;bash&quot;&gt;
+greg@emunah$ ssh greg@maui -Y&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+On my local host (maui), run the &lt;code&gt;xauthmagic&amp;lt;&amp;#47;code&amp;gt; script above&lt;/p&gt;
+&lt;pre lang=&quot;bash&quot;&gt;
+greg@maui$ ~&amp;#47;bin&amp;#47;xauthmagic&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+From my local host emacs, run &lt;code&gt;M-x make-frame-on-display RET localhost:10.0 RET&amp;lt;&amp;#47;code&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;/p&gt;
+&lt;p&gt;Et voil&amp;aacute;!&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Emacs Power: remote servers and shell commands</title>
+   <link href="http://gregorygrubbs.com//development/wordpress/emacs/2009/10/02/emacs-power-remote-servers-and-shell-commands/"/>
+   <updated>2009-10-02T11:26:40-07:00</updated>
+   <id>http://gregorygrubbs.com/development/wordpress/emacs/2009/10/02/emacs-power-remote-servers-and-shell-commands</id>
+   <content type="html">&lt;p&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;flickr.com&amp;#47;photos&amp;#47;16230215@N08&amp;#47;2898797929&quot; title=&quot;Come Together&quot;&gt;&lt;img src=&quot;http:&amp;#47;&amp;#47;farm4.static.flickr.com&amp;#47;3282&amp;#47;2898797929_f209eeb4a4.jpg&quot; &amp;#47;&gt;&lt;&amp;#47;a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;h4 id=&quot;sec-1&quot;&gt;Emacs file and directory browsing &amp;lt;&amp;#47;h4&amp;gt;&lt;/p&gt;
+&lt;p&gt;Emacs has Dired, a great method for browsing directories; especially in combination with ido-mode, I prefer it to Windows Explorer, OS X Finder, Gnome Nautilus, or anything else I&amp;#39;ve used over the decades to browse file systems. You can quickly begin entering paths, and Dired helps you with directory and file name completion.&lt;br /&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;a id=&quot;more-372&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;  As you browse directories, emacs lets you bookmark any path you may visit again. A very cool feature of emacs is the wide variety of shell-based modes: shell, term, interactive SQL, version control, recursive grep, and more.  When you are looking at a Dired buffer and invoke any of those commands, the shell is started in the directory you are looking at.&lt;/p&gt;
+&lt;h4 id=&quot;sec-2&quot;&gt;TRAMP: powerful remote file server access &amp;lt;&amp;#47;h4&amp;gt;&lt;/p&gt;
+&lt;p&gt;An emacs user will eventually discover that Dired becomes even more powerful with the built-in power of TRAMP (Transparent Remote (file) Access, Multiple Protocol).  This extends directory path syntax to include FTP, SSH, Rsync and other protocols for accessing remote files.&lt;/p&gt;
+&lt;p&gt;  An example of accessing a remote file on my development server &lt;code&gt;smeagol&amp;lt;&amp;#47;code&amp;gt; from my laptop:&lt;/p&gt;
+&lt;pre class=&quot;example&quot;&gt;&amp;#47;ssh:gregj@smeagol:work&amp;#47;client1&amp;#47;web&amp;#47;index.php&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;  A directory on an FTP server is accessed the same way:&lt;/p&gt;
+&lt;pre class=&quot;example&quot;&gt;&amp;#47;ftp:ftpuser@ftp.example.com:&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;  Even sudo is considered a &amp;#39;protocol&amp;#39;; so to gain root access without leaving the comfort of your emacs session, use&lt;/p&gt;
+&lt;pre class=&quot;example&quot;&gt;&amp;#47;sudo::&amp;#47;etc&amp;#47;hosts&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;  Emacs even helps you browse remote servers, providing the same name completion you get on your local directories.&lt;/p&gt;
+&lt;h4 id=&quot;sec-1&quot;&gt;The amazing combo of TRAMP and shell commands&amp;lt;&amp;#47;h4&amp;gt;&lt;/p&gt;
+&lt;p&gt;  As wonderful as all this is, we are still in the realm of &amp;quot;mere&amp;quot; GUI editors that can browse remote servers. But we are dealing with emacs, the superset of all editors, so we expect even more.&lt;/p&gt;
+&lt;p&gt;  Imagine we are looking at a directory on a remote server at &lt;code&gt;&amp;#47;ssh:myuser@remote.com:web&amp;#47;public&lt;em&gt;html&amp;lt;&amp;#47;code&amp;gt;, and decide to type&lt;/p&gt;
+&lt;pre class=&quot;example&quot;&gt;M-x shell&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;  What happens? Why, emacs looks at our current directory, sees that it is a TRAMP remote path, and just does the Right Thing&amp;trade;: in this case, invokes ssh, sets the directory on the remote server to ~myuser&amp;#47;web&amp;#47;public&lt;/em&gt;html, and sets us at the shell prompt.&lt;/p&gt;
+&lt;p&gt;  Similarly, if we invoke version control (&lt;code&gt;vc-dir&amp;lt;&amp;#47;code&amp;gt;, for example), or recursive grep (&lt;code&gt;rgrep&amp;lt;&amp;#47;code&amp;gt;), or most other shell-based commands, emacs will open a secure shell first, then run the vc command (&lt;code&gt;svn&amp;lt;&amp;#47;code&amp;gt;, &lt;code&gt;git&amp;lt;&amp;#47;code&amp;gt;, etc) or &lt;code&gt;grep&amp;lt;&amp;#47;code&amp;gt; &lt;b&gt;on the remote server!!&amp;lt;&amp;#47;b&amp;gt; So for example, if I innocently invoke &lt;code&gt;rgrep&amp;lt;&amp;#47;code&amp;gt; at the root of a remote WordPress installation, the grep command looks through all the files from the remote server. If on the other hand I were accessing the server using something like &lt;a href=&quot;http:&amp;#47;&amp;#47;fuse.sourceforge.net&amp;#47;sshfs.html&quot;&gt;SSHFS&amp;lt;&amp;#47;a&amp;gt;, all those files would be transferred to my local machine first and then searched!&lt;/p&gt;
+&lt;h4 id=&quot;sec-3&quot;&gt;Some examples &amp;lt;&amp;#47;h4&amp;gt;&lt;/p&gt;
+&lt;p&gt;  I&amp;#39;ll save my favorite uses of this magic called Dired with TRAMP for last.  I often need to access a development system or a live WordPress installation remotely. To access the SQL client, I found I often had to browse for the WordPress config file, open it, search for the database access info, open a SQL session using &lt;code&gt;M-x sql-mysql&amp;lt;&amp;#47;code&amp;gt; and fill in all the prompts to authenticate to the MySQL server.  It&amp;#39;s great that emacs with TRAMP starts a shell on the remote machine, and initiates the mysql client on that machine.  But emacs allows you to do damn near anything you can imagine, so I realized I could write a function that does the following:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+    Looks for wp-config.php in the current directory&lt;br /&gt;
+  &amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+    If not found, moves up a directory until it either finds the file or reaches the root of the filesystem&lt;br /&gt;
+  &amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+    If found, opens the config file and parses the database authentication parameters&lt;br /&gt;
+  &amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+    Feeds those parameters to the sql-mysql function and&lt;br /&gt;
+  &amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+    plops me into the MySQL prompt all logged in and ready to go!&lt;/p&gt;
+&lt;p&gt;  &amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ol&amp;gt;&lt;/p&gt;
+&lt;p&gt;Another example: my iPod Touch has an SSH server running on it (don&amp;#39;t ask me how it got there). I have discovered that many apps use SQLite to store their data.  I have been losing weight lately, and have been using the excellent &lt;a href=&quot;http:&amp;#47;&amp;#47;www.loseit.com&amp;#47;&quot;&gt;Lose It!&amp;lt;&amp;#47;a&amp;gt; app to track my meals and exercise.  The app gives me nice weekly summaries of my caloric intake, but does not give a weekly summary of my aerobic exercise.  Here&amp;#39;s how I get that information now:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+    I have a nice bookmark to the Lose It! application directory at&lt;br /&gt;
+    &lt;code&gt;&amp;#47;scpc:mobile@172.16.17.118:&amp;#47;var&amp;#47;mobile&amp;#47;Applications&amp;#47;C6503545-700B-4395-9C8B-FE5B75CF6CD8&amp;#47;&amp;lt;&amp;#47;code&amp;gt;,&lt;br /&gt;
+    so I hit the Return key on that bookmark and wait for Dired to show me the files there.&lt;br /&gt;
+  &amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+    Browse to the Documents directory, wherein is stored the database for my personal history&lt;br /&gt;
+  &amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+    Invoke &lt;code&gt;M-x sql-sqlite&amp;lt;&amp;#47;code&amp;gt; and enter the database file &lt;code&gt;UserDatabaseV1.sql&amp;lt;&amp;#47;code&amp;gt; (using dabbrev as a shortcut)&lt;br /&gt;
+  &amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt;
+    Wait for the SQLite prompt to appear, and run a lovely little SQL query using a YASnippets shortcut: &lt;/p&gt;
+&lt;p&gt;  &amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ol&amp;gt;&lt;/p&gt;
+&lt;pre class=&quot;src src-sql&quot;&gt;&lt;span style=&quot;color: #a020f0;&quot;&gt;SELECT&amp;lt;&amp;#47;span&amp;gt; &lt;span style=&quot;color: #228b22;&quot;&gt;date&amp;lt;&amp;#47;span&amp;gt;(&lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;2001-01-01&amp;#39;&amp;lt;&amp;#47;span&amp;gt;, &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;+&amp;#39;&amp;lt;&amp;#47;span&amp;gt; || &lt;span style=&quot;color: #228b22;&quot;&gt;Date&amp;lt;&amp;#47;span&amp;gt; || &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39; day&amp;#39;&amp;lt;&amp;#47;span&amp;gt;, &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;-1 day&amp;#39;&amp;lt;&amp;#47;span&amp;gt;, &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;weekday 1&amp;#39;&amp;lt;&amp;#47;span&amp;gt;, &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;-7 day&amp;#39;&amp;lt;&amp;#47;span&amp;gt;) &lt;span style=&quot;color: #a020f0;&quot;&gt;AS&amp;lt;&amp;#47;span&amp;gt; Weekdate, strftime(&lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;%W&amp;#39;&amp;lt;&amp;#47;span&amp;gt;,&lt;span style=&quot;color: #228b22;&quot;&gt;date&amp;lt;&amp;#47;span&amp;gt;(&lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;2001-01-01&amp;#39;&amp;lt;&amp;#47;span&amp;gt;, &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;+&amp;#39;&amp;lt;&amp;#47;span&amp;gt; || &lt;span style=&quot;color: #228b22;&quot;&gt;Date&amp;lt;&amp;#47;span&amp;gt; || &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39; day&amp;#39;&amp;lt;&amp;#47;span&amp;gt;, &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;-1 day&amp;#39;&amp;lt;&amp;#47;span&amp;gt;)) &lt;span style=&quot;color: #a020f0;&quot;&gt;AS&amp;lt;&amp;#47;span&amp;gt; Week,   ExerciseName, ExerciseCategoryId, &lt;span style=&quot;color: #da70d6;&quot;&gt;SUM&amp;lt;&amp;#47;span&amp;gt;(Minutes), &lt;span style=&quot;color: #da70d6;&quot;&gt;SUM&amp;lt;&amp;#47;span&amp;gt;(CaloriesBurned)   &lt;span style=&quot;color: #a020f0;&quot;&gt;FROM&amp;lt;&amp;#47;span&amp;gt; ExerciseLogEntries  &lt;span style=&quot;color: #a020f0;&quot;&gt;GROUP&amp;lt;&amp;#47;span&amp;gt; &lt;span style=&quot;color: #a020f0;&quot;&gt;BY&amp;lt;&amp;#47;span&amp;gt; Week;&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;h4 id=&quot;sec-4&quot;&gt;Summary &amp;lt;&amp;#47;h4&amp;gt;&lt;/p&gt;
+&lt;p&gt;I hope that this post gives an idea of the power of TRAMP on emacs.  It should at least explain the occasional ecstatic post you may see from your geekier tweeps.&lt;/p&gt;
+&lt;p&gt;As a bonus, here&amp;#39;s what the above examples look like in use: it&amp;#39;s unbelievable how fast emacs makes you after a quick 15 years of study.&lt;/p&gt;
+&lt;p&gt;&lt;object width=&quot;640&quot; height=&quot;505&quot;&gt;&lt;param name=&quot;movie&quot; value=&quot;http:&amp;#47;&amp;#47;www.youtube.com&amp;#47;v&amp;#47;UjPasLGWzD0&amp;hl=en&amp;fs=1&amp;color1=0x5d1719&amp;color2=0xcd311b&quot;&gt;&amp;lt;&amp;#47;param&amp;gt;&lt;param name=&quot;allowFullScreen&quot; value=&quot;true&quot;&gt;&amp;lt;&amp;#47;param&amp;gt;&lt;param name=&quot;allowscriptaccess&quot; value=&quot;always&quot;&gt;&amp;lt;&amp;#47;param&amp;gt;&lt;embed src=&quot;http:&amp;#47;&amp;#47;www.youtube.com&amp;#47;v&amp;#47;UjPasLGWzD0&amp;hl=en&amp;fs=1&amp;color1=0x5d1719&amp;color2=0xcd311b&quot; type=&quot;application&amp;#47;x-shockwave-flash&quot; allowscriptaccess=&quot;always&quot; allowfullscreen=&quot;true&quot; width=&quot;640&quot; height=&quot;505&quot;&gt;&amp;lt;&amp;#47;embed&amp;gt;&amp;lt;&amp;#47;object&amp;gt;&lt;/p&gt;
+&lt;p&gt;  And here&amp;#39;s my emacs lisp code that opens up a SQL prompt for any WordPress installation.  To use, eval the code and invoke &lt;code&gt;M-x gjg&amp;#47;sql-mysql-wordpress&amp;lt;&amp;#47;code&amp;gt;&lt;/p&gt;
+&lt;pre class=&quot;src src-emacs-lisp&quot;&gt;(&lt;span style=&quot;color: #a020f0;&quot;&gt;defun&amp;lt;&amp;#47;span&amp;gt; &lt;span style=&quot;color: #0000ff;&quot;&gt;gjg&amp;#47;parse-wp-config-db&amp;lt;&amp;#47;span&amp;gt; (wpconfig-path)&lt;br /&gt;
+  &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;Read in and parse the DB settings from a WordPress config file; binds &amp;#39;global&amp;#39; vars for use by sql-mode&amp;quot;&amp;lt;&amp;#47;span&amp;gt;&lt;br /&gt;
+  (&lt;span style=&quot;color: #a020f0;&quot;&gt;save-excursion&amp;lt;&amp;#47;span&amp;gt; &lt;span style=&quot;color: #b22222;&quot;&gt;;; &amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #b22222;&quot;&gt;will restore current buffer and default dir afterwards&lt;br /&gt;
+  &amp;lt;&amp;#47;span&amp;gt;    (set-buffer (get-buffer-create (generate-new-buffer-name &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot; wp-config.php&amp;quot;&amp;lt;&amp;#47;span&amp;gt;)))&lt;br /&gt;
+  (insert-file-contents wpconfig-path)&lt;br /&gt;
+  &lt;span style=&quot;color: #b22222;&quot;&gt;;; &amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #b22222;&quot;&gt;in regex: subexpr 1 is variable name, subexpr 3 is value: DB&lt;em&gt;{HOST,NAME,PASSWORD,USER}&lt;br /&gt;
+  &amp;lt;&amp;#47;span&amp;gt;    (&lt;span style=&quot;color: #a020f0;&quot;&gt;while&amp;lt;&amp;#47;span&amp;gt; (search-forward-regexp &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;define\s&lt;em&gt;(\s&lt;/em&gt;[&amp;#39;\&amp;quot;]&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;(&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;DB&lt;/em&gt;&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;(&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;HOST&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;|&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;NAME&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;|&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;PASSWORD&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;|&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;USER&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;)&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;)&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;[&amp;#39;\&amp;quot;]\s&lt;em&gt;,\s&lt;/em&gt;[&amp;#39;\&amp;quot;]&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;(&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;[&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;^&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;\&amp;quot;]&lt;em&gt;&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;\&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff; font-weight: bold;&quot;&gt;)&amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #0000ff;&quot;&gt;[&amp;#39;\&amp;quot;]\s&lt;/em&gt;)&amp;quot;&amp;lt;&amp;#47;span&amp;gt; (point-max) 42   )&lt;br /&gt;
+  (&lt;span style=&quot;color: #a020f0;&quot;&gt;cond&amp;lt;&amp;#47;span&amp;gt;&lt;br /&gt;
+  ((equal &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;DB&lt;em&gt;HOST&amp;quot;&amp;lt;&amp;#47;span&amp;gt; (match-string-no-properties 1))&lt;br /&gt;
+  (setq sql-server (match-string-no-properties 3)))&lt;br /&gt;
+  ((equal &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;DB&lt;/em&gt;NAME&amp;quot;&amp;lt;&amp;#47;span&amp;gt; (match-string-no-properties 1))&lt;br /&gt;
+  (setq sql-database (match-string-no-properties 3)))&lt;br /&gt;
+  ((equal &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;DB&lt;em&gt;PASSWORD&amp;quot;&amp;lt;&amp;#47;span&amp;gt; (match-string-no-properties 1))&lt;br /&gt;
+  (setq sql-password (match-string-no-properties 3)))&lt;br /&gt;
+  ((equal &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;DB&lt;/em&gt;USER&amp;quot;&amp;lt;&amp;#47;span&amp;gt; (match-string-no-properties 1))&lt;br /&gt;
+  (setq sql-user (match-string-no-properties 3)))))&lt;br /&gt;
+  (kill-buffer )))&lt;/p&gt;
+&lt;p&gt;  (&lt;span style=&quot;color: #a020f0;&quot;&gt;defun&amp;lt;&amp;#47;span&amp;gt; &lt;span style=&quot;color: #0000ff;&quot;&gt;gjg&amp;#47;sql-mysql-wordpress&amp;lt;&amp;#47;span&amp;gt; ()&lt;br /&gt;
+  &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;Find WordPress config file in current tree, log into WP database if found.&amp;quot;&amp;lt;&amp;#47;span&amp;gt;&lt;br /&gt;
+  (interactive)&lt;br /&gt;
+  (&lt;span style=&quot;color: #a020f0;&quot;&gt;let&amp;lt;&amp;#47;span&amp;gt; ((mypath (locate-dominating-file default-directory &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;wp-config.php&amp;quot;&amp;lt;&amp;#47;span&amp;gt;)))&lt;br /&gt;
+  (&lt;span style=&quot;color: #a020f0;&quot;&gt;if&amp;lt;&amp;#47;span&amp;gt; mypath&lt;br /&gt;
+  (&lt;span style=&quot;color: #a020f0;&quot;&gt;progn&amp;lt;&amp;#47;span&amp;gt;&lt;br /&gt;
+  (gjg&amp;#47;parse-wp-config-db (concat mypath &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;wp-config.php&amp;quot;&amp;lt;&amp;#47;span&amp;gt;))&lt;br /&gt;
+  (pop-to-buffer (sql-connect-mysql))&lt;br /&gt;
+  (setq sql-interactive-product &amp;#39;mysql)&lt;br /&gt;
+  (setq sql-buffer (current-buffer))&lt;br /&gt;
+  (sql-interactive-mode)&lt;br /&gt;
+  (&lt;span style=&quot;color: #a020f0;&quot;&gt;let*&amp;lt;&amp;#47;span&amp;gt; ((match (string-match (nth 0 tramp-file-name-structure) mypath))&lt;br /&gt;
+  (myformat (&lt;span style=&quot;color: #a020f0;&quot;&gt;if&amp;lt;&amp;#47;span&amp;gt; (eq nil match)&lt;br /&gt;
+  (format &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot; WordPress: local; %s; dbhost %s &amp;quot;&amp;lt;&amp;#47;span&amp;gt;&lt;br /&gt;
+  mypath&lt;br /&gt;
+  sql-server&lt;br /&gt;
+  )&lt;br /&gt;
+  (format &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot; WordPress: Remote %s@%s %s; dbhost %s &amp;quot;&amp;lt;&amp;#47;span&amp;gt;&lt;br /&gt;
+  (match-string (nth 2 tramp-file-name-structure) mypath)&lt;br /&gt;
+  (match-string (nth 3 tramp-file-name-structure) mypath)&lt;br /&gt;
+  (match-string (nth 4 tramp-file-name-structure) mypath)&lt;br /&gt;
+  sql-server))))&lt;br /&gt;
+  (setq header-line-format myformat))&lt;br /&gt;
+  )&lt;br /&gt;
+  (message &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;Did not find wp-config.php in current path&amp;quot;&amp;lt;&amp;#47;span&amp;gt;))&lt;br /&gt;
+  ))&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt; LocalWords:  Dired emacs SQL Rsync smeagol pre rgrep WordPress MySQL iPod&lt;br /&gt;
+ LocalWords:  SQLite&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How I became a programmer (thank you, Captain Kirk)</title>
+   <link href="http://gregorygrubbs.com//general%20interest/2009/05/14/how-i-became-a-programmer-thank-you-captain-kirk/"/>
+   <updated>2009-05-14T09:05:11-07:00</updated>
+   <id>http://gregorygrubbs.com/general%20interest/2009/05/14/how-i-became-a-programmer-thank-you-captain-kirk</id>
+   <content type="html">&lt;p&gt;&lt;img src=&quot;http:&amp;#47;&amp;#47;farm1.static.flickr.com&amp;#47;71&amp;#47;228712807_e2b52b6708_m.jpg&quot; alt=&quot;&quot; &amp;#47;&gt;&lt;/p&gt;
+
+&lt;p&gt;With JJ Abrams rocking our worlds with new Star Trek energy, I thought I would give thanks to the Trek franchise for helping me find my vocational path.&lt;/p&gt;
+
+&lt;p&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;a id=&quot;more-207&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We had a little closet of a computer room at my High School.  The room had a couple old WWII teletype machines connected via acoustic couplers to a Data General minicomputer at the county administration building.  Some early young hacker in Junior High had finagled himself a sysadmin job working for free at nights there.  Programming in Basic (and probably cribbing from Dr. Dobbs Journal), he had written a two-player game of Star Trek.  One player would get to be the Enterprise, and the other would become a Klingon.  The players could send threatening messages to each other, and would periodically print out long-range or short-range scans.  Once you had located the other ship you would have to calculate the tangent between your two-dimensional coordinates and those of the other ship, so you could turn to fire!  If you fired an energy weapon, the power of the blast would decrease by the inverse of the square of the distance between you.  It was just amazing, and great fun as the scans chugged out on the teletypes.&lt;/p&gt;
+
+&lt;p&gt;Playing was plenty fun -- but once I discovered I could print out the source code, modify it, and actually CHANGE THE WAY THE GAME WORKED, I was done.  Hook, line and sinker, reel me in Scotty.&lt;/p&gt;
+
+&lt;p&gt;Some 30 years hence, it&#39;s still great fun to create software.  The path of the programmer has brought me to a couple dozen countries around the world, helped me understand design, taught me about business and introduced me to a multitude of amazing people.&lt;/p&gt;
+
+&lt;p&gt;Live long, and prosper.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>One-button website publishing using WordPress-mu</title>
+   <link href="http://gregorygrubbs.com//development/wordpress/wordpress-mu/2009/03/30/one-button-website-publishing-using-wordpress-mu/"/>
+   <updated>2009-03-30T18:50:48-07:00</updated>
+   <id>http://gregorygrubbs.com/development/wordpress/wordpress-mu/2009/03/30/one-button-website-publishing-using-wordpress-mu</id>
+   <content type="html">&lt;p&gt;&lt;a title=&quot;Create many from the one&quot; href=&quot;http:&amp;#47;&amp;#47;flickr.com&amp;#47;photos&amp;#47;63989735@N00&amp;#47;2431138923&quot;&gt;&lt;img src=&quot;http:&amp;#47;&amp;#47;farm3.static.flickr.com&amp;#47;2299&amp;#47;2431138923_ff1f7aaa36.jpg&quot; alt=&quot;&quot; &amp;#47;&gt;&lt;&amp;#47;a&gt;&lt;/p&gt;
+
+&lt;p&gt;I&#39;m kinda loving on WordPress MU.  One of my recent projects required building web sites that pulled from a shared database.  WordPress MU allowed me to create a one-button website builder for my client.  WordPress MU calls them blogs, but my client will map a unique domain to each blog, and, well, doesn&#39;t use them as blogs at all.  So I&#39;m calling them sites here.&lt;/p&gt;
+
+&lt;p&gt;By filling in three fields and clicking a button, my client creates a website that&lt;/p&gt;
+
+&lt;p&gt;&lt;ul&gt;
+&lt;li&gt; Associates metadata with the site that specifies filter criteria to select records from the shared database&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt; Sets the permalink structure for the new site to a custom setting&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt; Creates a key category for the new site, one that is used for the posts generated in a later step&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt; Sets the theme&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt; All the initial pages are created, including content.  The &amp;quot;slug&amp;quot; is set specifically to support the URL structure we want.  Page template is also set here because our design calls for a hierarchy of pages.&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt; If the PageMash plugin is active (it is auto-activated for all new blogs using Plugin Commander), certain pages are hidden, and a specific order is set so that page navigation comes out looking good&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt; The front page is set, because we are creating CMS sites, not blogs&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt;Several hundred posts are generated out of the underlying shared non-WPMU database tables&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ul&amp;gt;&lt;br /&gt;
+All of this takes something like 20 seconds, at which point the admin can visit the new site as a subdomain.&amp;nbsp; The theme has been applied, navigation works correctly, it is beauty.&lt;/p&gt;
+&lt;p&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;a id=&quot;more-174&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Here&amp;#39;s how it is done in code.&amp;nbsp; All you need to do is register a function for the action hook that WordPress MU runs when a new blog is created.&lt;/p&gt;
+&lt;pre lang=&quot;PHP&quot;&gt;function mypp&lt;em&gt;initialize&lt;/em&gt;blog($blog&lt;em&gt;id) {&lt;br /&gt;
+  global $wp&lt;/em&gt;rewrite;&lt;/p&gt;
+&lt;p&gt;  &amp;#47;&amp;#47; first, switch to the new blog; we will undo this at the&lt;br /&gt;
+  &amp;#47;&amp;#47; end of the function with restore&lt;em&gt;current&lt;/em&gt;blog()&lt;br /&gt;
+  switch&lt;em&gt;to&lt;/em&gt;blog($blog&lt;em&gt;id);&lt;br /&gt;
+  &amp;#47;&amp;#47; add a blog option, here a filter with a default value&lt;br /&gt;
+  add&lt;/em&gt;option($blog&lt;em&gt;id, &amp;#39;campus&lt;/em&gt;selection&lt;em&gt;criteria&amp;#39;, &amp;quot;CampusStateID=&amp;#39;CA&amp;#39;&amp;quot;);&lt;br /&gt;
+  &amp;#47;&amp;#47; Set a custom permalink structure&lt;br /&gt;
+  $wp&lt;/em&gt;rewrite-&amp;gt;set&lt;em&gt;permalink&lt;/em&gt;structure(&amp;#39;&amp;#47;%category%&amp;#47;%postname%&amp;#39;);&lt;br /&gt;
+  $wp&lt;em&gt;rewrite-&amp;gt;flush&lt;/em&gt;rules();&lt;br /&gt;
+  if (function&lt;em&gt;exists(&amp;#39;wp&lt;/em&gt;create&lt;em&gt;category&amp;#39;)) {&lt;br /&gt;
+      wp&lt;/em&gt;create&lt;em&gt;category(&amp;#39;schools&amp;#39;);&lt;br /&gt;
+  }&lt;/p&gt;
+&lt;p&gt;  &amp;#47;&amp;#47; switch theme - this one specifies a child theme&lt;br /&gt;
+  switch&lt;/em&gt;theme(&amp;#39;corporate&amp;#39;, &amp;#39;tweaked-corporate&amp;#39;);&lt;br /&gt;
+  &amp;#47;&amp;#47; Prepare options used by the pageMash plugin, auto-activated for new sites&lt;br /&gt;
+  if(!is&lt;em&gt;array(get&lt;/em&gt;option(&amp;#39;exclude&lt;em&gt;pages&amp;#39;)))&lt;br /&gt;
+    $excludePagesList=array();&lt;br /&gt;
+  else&lt;br /&gt;
+    $excludePagesList = get&lt;/em&gt;option(&amp;#39;exclude&lt;em&gt;pages&amp;#39;); &amp;#47;&amp;#47;if it&amp;#39;s empty set as an empty array&lt;br /&gt;
+  &amp;#47;&amp;#47; add pages to support the basic page structure&lt;br /&gt;
+  &amp;#47;&amp;#47; NOTE: the full code is not shown, standard use of wp&lt;/em&gt;insert post&lt;br /&gt;
+  &amp;#47;&amp;#47; for each page:&lt;br /&gt;
+  $newid = wp&lt;em&gt;insert&lt;/em&gt;post($postdata);&lt;br /&gt;
+  if ($newid &amp;amp;&amp;amp; !is&lt;em&gt;wp&lt;/em&gt;error($newid)) {&lt;br /&gt;
+    add&lt;em&gt;meta($newid);&lt;br /&gt;
+    if ( IWANTOEXCLUDETHISPARTICULARPAGEFROMNAVIGATION )&lt;br /&gt;
+      $excludePagesList[] = $newid;&lt;br /&gt;
+    if (THISPARTICULARPAGE == &amp;#39;home&amp;#39;) {&lt;br /&gt;
+      update&lt;/em&gt;option(&amp;#39;show&lt;em&gt;on&lt;/em&gt;front&amp;#39;, &amp;#39;page&amp;#39;);&lt;br /&gt;
+      update&lt;em&gt;option(&amp;#39;page&lt;/em&gt;on&lt;em&gt;front&amp;#39;, $newid);&lt;br /&gt;
+    }&lt;br /&gt;
+  } else {&lt;br /&gt;
+    &amp;#47;&amp;#47; error handling if insert post failed&lt;br /&gt;
+  }&lt;br /&gt;
+  &amp;#47;&amp;#47; end for each page&lt;br /&gt;
+  update&lt;/em&gt;option(&amp;#39;exclude&lt;em&gt;pages&amp;#39;, $excludePagesList);&lt;br /&gt;
+  &amp;#47;&amp;#47; now generate posts for schools from the shared database&lt;br /&gt;
+  createSchoolAsPost(&amp;#39;&amp;#39;, $blog&lt;/em&gt;id);&lt;br /&gt;
+  &amp;#47;&amp;#47; we&amp;#39;re done! restore our initial blog&lt;br /&gt;
+  restore&lt;em&gt;current&lt;/em&gt;blog();&lt;br /&gt;
+} &amp;#47;&amp;#47; function mypp&lt;em&gt;initialize&lt;/em&gt;blog&lt;/p&gt;
+&lt;p&gt;add&lt;em&gt;action(&amp;#39;wpmu&lt;/em&gt;new&lt;em&gt;blog&amp;#39;, &amp;#39;mypp&lt;/em&gt;initialize_blog&amp;#39;);&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to get your command line PHP script working with WordPress-MU 2.7</title>
+   <link href="http://gregorygrubbs.com//development/wordpress/wordpress-mu/2009/03/29/how-to-get-your-command-line-php-script-working-with-wordpress-mu-27/"/>
+   <updated>2009-03-29T10:47:23-07:00</updated>
+   <id>http://gregorygrubbs.com/development/wordpress/wordpress-mu/2009/03/29/how-to-get-your-command-line-php-script-working-with-wordpress-mu-27</id>
+   <content type="html">&lt;p&gt;&lt;a href=&quot;http:&amp;#47;&amp;#47;flickr.com&amp;#47;photos&amp;#47;86639396@N00&amp;#47;125838823&quot; title=&quot;To the moon, Ajax!&quot;&gt;&lt;img src=&quot;http:&amp;#47;&amp;#47;farm1.static.flickr.com&amp;#47;48&amp;#47;125838823_e1a4d43a62_m.jpg&quot; &amp;#47;&gt;&lt;&amp;#47;a&gt;&lt;/p&gt;
+
+&lt;p&gt; OK, this one is obscure. I only post about what I can&#39;t find on Google!&lt;/p&gt;
+
+&lt;p&gt;Until recently it has been possible to run command-line PHP scripts that include wp-config.php or wpmu-settings.php, in order to give those scripts access to WordPress globals like $wpdb, functions such as wp_insert_post etc.  &lt;/p&gt;
+
+&lt;p&gt;These scripts worked with WordPress-MU until recently -- now the scripts just exit with no output.  &lt;/p&gt;
+
+&lt;p&gt;The reason?  WPMU now initiates a redirect in the bootstrap process (search for &#39;header( &quot;Location: &quot;&#39;  in wpmu-settings.php).  A browser can follow that redirection, but a command line script cannot.  So, if you want to initiate scripts that run from the command line, you will have to get the web server involved by invoking a text browser such as curl, wget, or links.  &lt;/p&gt;
+
+&lt;p&gt;It&#39;s best not to force your scripts to figure out where to find wp-config.php anyway.  I have taken to using a method suggested in &lt;a href=&quot;http:&amp;#47;&amp;#47;wordpress.org&amp;#47;support&amp;#47;topic&amp;#47;190522&quot;&gt;this thread&lt;&amp;#47;a&gt;, as shown in the code sample below.  The good news is, you know that your script will work the same whether initiated from a plugin in a graphic browser, used in an Ajax call, or initiated from cron or the command line shell.&lt;/p&gt;
+
+&lt;p&gt;So instead of kicking your script off with something like &lt;/p&gt;
+
+&lt;p&gt;&lt;pre lang=&quot;Bash&quot;&gt;
+&amp;#47;usr&amp;#47;bin&amp;#47;php -q myscript.php&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;You will create the script as a proper plugin and do something like&lt;/p&gt;
+&lt;pre lang=&quot;Bash&quot;&gt;
+&amp;#47;usr&amp;#47;bin&amp;#47;curl -d mypp&lt;em&gt;cmd=status http:&amp;#47;&amp;#47;mywpmusite.com&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;Sample plugin code used for the above example follows.  The prefix for the functions is &amp;#39;mypp&amp;#39;, which of course stands for &amp;#39;MY Plugin Prefix&amp;#39; to create a unique namespace.  The code below returns results as JSON encoded, and calls die()&amp;#47;exit() at the end to prevent an entire page being created.  For log files run from cron, you may choose to return plain text instead.&lt;/p&gt;
+&lt;pre lang=&quot;PHP&quot;&gt;
+  &amp;#47;**&lt;br /&gt;
+   * Add a query var for this plugin&lt;br /&gt;
+   * This allows Ajax programs to operate without requiring file paths&lt;br /&gt;
+   * Instead, Ajax functions look for the query var &amp;#39;mypp&lt;/em&gt;cmd&amp;#39;&lt;br /&gt;
+   &lt;em&gt;&amp;#47;&lt;br /&gt;
+  function mypp&lt;em&gt;query&lt;/em&gt;vars($qvars) {&lt;br /&gt;
+    $qvars[] = &amp;#39;mypp&lt;em&gt;cmd&amp;#39;;&lt;br /&gt;
+    return $qvars;&lt;br /&gt;
+  } &amp;#47;&amp;#47; function mypp&lt;/em&gt;query_vars&lt;/p&gt;
+&lt;p&gt;  &amp;#47;&lt;/em&gt;*&lt;br /&gt;
+   * Handle AJAX requests in the template&lt;em&gt;redirect action&lt;br /&gt;
+   * We recognize our requests from the query var &amp;#39;mypp&lt;/em&gt;cmd&amp;#39;&lt;br /&gt;
+   * Here we allow GET requests using $&lt;em&gt;REQUEST; to restrict to POST, use $&lt;/em&gt;POST instead&lt;br /&gt;
+   *&amp;#47;&lt;br /&gt;
+  function mypp&lt;em&gt;template&lt;/em&gt;redirect() {&lt;br /&gt;
+    global $wpdb;&lt;br /&gt;
+    $cmd = get&lt;em&gt;query&lt;/em&gt;var(&amp;#39;mypp&lt;em&gt;cmd&amp;#39;);&lt;br /&gt;
+    $response = array();&lt;br /&gt;
+    if ($cmd) {&lt;br /&gt;
+      switch($cmd) {&lt;br /&gt;
+      case &amp;#39;status&amp;#39;:&lt;br /&gt;
+    $response[&amp;#39;status&amp;#39;] = array(&amp;#39;success&amp;#39; =&amp;gt; true,&lt;br /&gt;
+                    &amp;#39;message&amp;#39; =&amp;gt; &amp;#39;Sample status message&amp;#39;);&lt;br /&gt;
+    break;&lt;br /&gt;
+      default:&lt;br /&gt;
+    $response[&amp;#39;status&amp;#39;] = array(&amp;#39;success&amp;#39; =&amp;gt; false,&lt;br /&gt;
+                    &amp;#39;msg&amp;#39; =&amp;gt; &amp;#39;Unknown command&amp;#39;,&lt;br /&gt;
+                    &amp;#39;cmd&amp;#39; =&amp;gt; $cmd);&lt;br /&gt;
+    break;&lt;br /&gt;
+      } &amp;#47;&amp;#47; switch $cmd&lt;br /&gt;
+      header(&amp;#39;Content-type: text&amp;#47;x-json; charset=utf-8&amp;#39;);&lt;br /&gt;
+      print utf8&lt;/em&gt;encode(json&lt;em&gt;encode($response));&lt;br /&gt;
+      die();&lt;br /&gt;
+    } &amp;#47;&amp;#47; $cmd is set&lt;br /&gt;
+  } &amp;#47;&amp;#47; function mypp&lt;/em&gt;template&lt;em&gt;redirect&lt;/p&gt;
+&lt;p&gt;add&lt;/em&gt;filter(&amp;#39;query&lt;em&gt;vars&amp;#39;, array($this, &amp;#39;mypp&lt;/em&gt;query&lt;em&gt;vars&amp;#39;));&lt;br /&gt;
+add&lt;/em&gt;action(&amp;#39;template&lt;em&gt;redirect&amp;#39;, array($this, &amp;#39;mypp&lt;/em&gt;template_redirect&amp;#39;));&lt;/p&gt;
+&lt;p&gt;&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to change the number of posts shown in the WordPress admin area without hacking the core</title>
+   <link href="http://gregorygrubbs.com//development/wordpress/2009/03/25/how-to-change-the-number-of-posts-shown-in-the-wordpress-admin-area-without-hacking-the-core/"/>
+   <updated>2009-03-25T07:24:49-07:00</updated>
+   <id>http://gregorygrubbs.com/development/wordpress/2009/03/25/how-to-change-the-number-of-posts-shown-in-the-wordpress-admin-area-without-hacking-the-core</id>
+   <content type="html">&lt;p&gt;[caption id=&quot;attachment_154&quot; align=&quot;alignnone&quot; width=&quot;500&quot; caption=&quot;use the hook!&quot;]&lt;img class=&quot;size-full wp-image-154&quot; title=&quot;use the hook!&quot; src=&quot;http:&amp;#47;&amp;#47;gregorygrubbs.com&amp;#47;wp-content&amp;#47;uploads&amp;#47;2009&amp;#47;03&amp;#47;2921148701_6d1985e27f-cropped.jpg&quot; alt=&quot;use the hook!&quot; width=&quot;500&quot; height=&quot;248&quot; &amp;#47;&gt;[&amp;#47;caption]&lt;/p&gt;
+
+&lt;p&gt;It is easy to go in and hack the core WordPress files to change the hard-coded number, but I wanted to find a way to do it with a hook. &amp;nbsp;That way, I could one day change the number of posts shown using controls in the interface.&lt;/p&gt;
+
+&lt;p&gt;Though there is no filter provided for the number of posts displayed, I hit upon a method of doing this which I would like to share. &amp;nbsp;Perhaps someone will point out a better way, but for now this is making me happy&lt;/p&gt;
+
+&lt;p&gt;The trick is to hijack the query string just for the query that produces the table of posts. &amp;nbsp;Here&#39;s what I did:&lt;/p&gt;
+
+&lt;p&gt;&lt;pre lang=&quot;PHP&quot;&gt;
+&amp;#47;**  * Extend the number of posts displayed in the Edit Posts  *&amp;#47;&lt;br /&gt;
+function dapl&lt;em&gt;query&lt;/em&gt;string($query&lt;em&gt;string) {&lt;br /&gt;
+    global $pagenow;&lt;br /&gt;
+    if (is&lt;/em&gt;admin() &amp;amp;&amp;amp; $pagenow == &amp;#39;edit.php&amp;#39;) {&lt;br /&gt;
+        $query&lt;em&gt;string = str&lt;/em&gt;replace(&amp;#39;posts&lt;em&gt;per&lt;/em&gt;page=15&amp;#39;, &amp;#39;posts&lt;em&gt;per&lt;/em&gt;page=100&amp;#39;, $query&lt;em&gt;string);&lt;br /&gt;
+    }&lt;br /&gt;
+    return $query&lt;/em&gt;string;&lt;br /&gt;
+}&lt;br /&gt;
+add&lt;em&gt;filter(&amp;#39;query&lt;/em&gt;string&amp;#39;, &amp;#39;dapl&lt;em&gt;query&lt;/em&gt;string&amp;#39;);&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to give all new WPMU blogs default properties, theme and pages</title>
+   <link href="http://gregorygrubbs.com//development/wordpress/2008/12/19/how-to-give-wpmu-blogs-default-properties-theme-and-pages/"/>
+   <updated>2008-12-19T13:22:54-08:00</updated>
+   <id>http://gregorygrubbs.com/development/wordpress/2008/12/19/how-to-give-wpmu-blogs-default-properties-theme-and-pages</id>
+   <content type="html">&lt;p&gt;I&#39;ve been developing an application on Wordpress-MU and thought I&#39;d share a cool tip.&lt;/p&gt;
+
+&lt;p&gt;When new web sites are generated by my client, I wanted the experience to be painless; a one-button ready-to-go web site.&lt;/p&gt;
+
+&lt;p&gt;It turns out there is an action hook (of course there is!) when a new blog is created.&amp;nbsp; So let&#39;s get down to the nitty gritty and see how to implement it.&lt;/p&gt;
+
+&lt;p&gt;I wanted to create a property that would apply to the new web site, which would allow my client to limit what data gets displayed on that site.&amp;nbsp; I also wanted to generate the basic set of pages that I am using to support the sites&#39; URL structure.&amp;nbsp; Each page has a unique template that gives it some special navigation and content mojo.&lt;/p&gt;
+
+&lt;p&gt;So first I set the site-global option:&lt;/p&gt;
+
+&lt;p&gt;&lt;pre lang=&quot;php&quot;&gt;
+add&lt;em&gt;blog&lt;/em&gt;option($blog&lt;em&gt;id,&lt;br /&gt;
+            &amp;#39;campus&lt;/em&gt;selection&lt;em&gt;criteria&amp;#39;,&lt;br /&gt;
+                &amp;quot;CampusStateID LIKE &amp;#39;%&amp;#39;&amp;quot;);&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;Now for the pages with their templates.&amp;nbsp; In order to let wp&lt;/em&gt;insert&lt;em&gt;post know which blog to use, we use a handy function call:&lt;/p&gt;
+&lt;pre lang=&quot;php&quot;&gt;
+switch&lt;/em&gt;to&lt;em&gt;blog($blog&lt;/em&gt;id);&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;
+&lt;p&gt;We will also need to specify the theme we are using so that the starting theme will be selected and the templates will be correctly associated.&lt;/p&gt;
+&lt;p&gt;I can then create the pages as I would in Wordpress-non-MU.&amp;nbsp; The final step is to call add&lt;em&gt;action() to hook this code into the blog creation event.&lt;/p&gt;
+&lt;p&gt;Here is the code in its entirety&lt;/p&gt;
+&lt;pre lang=&quot;php&quot;&gt;
+function dscp&lt;/em&gt;initialize&lt;em&gt;blog($blog&lt;/em&gt;id) {&lt;br /&gt;
+   add&lt;em&gt;blog&lt;/em&gt;option($blog&lt;em&gt;id,&lt;br /&gt;
+                   &amp;#39;campus&lt;/em&gt;selection&lt;em&gt;criteria&amp;#39;,&lt;br /&gt;
+                   &amp;quot;CampusStateID LIKE &amp;#39;%&amp;#39;&amp;quot;);&lt;br /&gt;
+   switch&lt;/em&gt;to&lt;em&gt;blog($blog&lt;/em&gt;id);&lt;br /&gt;
+   &amp;#47;&amp;#47; switch theme&lt;br /&gt;
+   switch&lt;em&gt;theme(&amp;#39;thematic&amp;#39;, &amp;#39;mychildtheme&amp;#39;);&lt;br /&gt;
+   $postdata = array(&amp;#39;post&lt;/em&gt;parent&amp;#39; =&amp;gt; 0,&lt;br /&gt;
+   &amp;#39;post&lt;em&gt;status&amp;#39; =&amp;gt; &amp;#39;publish&amp;#39;,&lt;br /&gt;
+   &amp;#39;post&lt;/em&gt;title&amp;#39;&amp;nbsp;&amp;nbsp; =&amp;gt; &amp;#39;DESCRIPTIVE TITLE&amp;#39;,&lt;br /&gt;
+   &amp;#39;post&lt;em&gt;name&amp;#39;&amp;nbsp; =&amp;gt; &amp;#39;descriptive-title&amp;#39;, &amp;#47;* the slug *&amp;#47;&lt;br /&gt;
+   &amp;#39;page&lt;/em&gt;template&amp;#39; =&amp;gt; &amp;#39;template-whatever.php&amp;#39;,&lt;br /&gt;
+   &amp;#39;post&lt;em&gt;type&amp;#39;&amp;nbsp;&amp;nbsp; =&amp;gt; &amp;#39;page&amp;#39;);&lt;br /&gt;
+   $newid = wp&lt;/em&gt;insert&lt;em&gt;post($postdata);&lt;br /&gt;
+   if ($newid &amp;amp;&amp;amp; !is&lt;/em&gt;wp&lt;em&gt;error($newid)) {&lt;br /&gt;
+      add&lt;/em&gt;meta($newid);&lt;br /&gt;
+   } else {&lt;br /&gt;
+      &amp;#47;&amp;#47; your error handling code&lt;br /&gt;
+   }&lt;br /&gt;
+}&lt;/p&gt;
+&lt;p&gt;add&lt;em&gt;action(&amp;#39;wpmu&lt;/em&gt;new&lt;em&gt;blog&amp;#39;, &amp;#39;dscp&lt;/em&gt;initialize_blog&amp;#39;);&lt;br /&gt;
+&amp;lt;&amp;#47;pre&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to upgrade Wordpress SAFELY using Subversion and Rsync</title>
+   <link href="http://gregorygrubbs.com//development/wordpress/2008/09/10/upgrading-wordpress-safely-using-subversion-and-rsync/"/>
+   <updated>2008-09-10T11:01:20-07:00</updated>
+   <id>http://gregorygrubbs.com/development/wordpress/2008/09/10/upgrading-wordpress-safely-using-subversion-and-rsync</id>
+   <content type="html">&lt;p&gt;I keep all my Wordpress projects in a Subversion repository.  I also have a snapshot of unmodified &#39;vanilla&#39; releases kept in the same repository.&lt;/p&gt;
+
+&lt;p&gt;Now theoretically I should simply be able to use the svn merge command in a working directory.  But I have encountered serious problems, including file corruption warnings, when using svn merge in an actively developed working directory.  Additionally, svn merge will delete files and directories that you added to the core Wordpress install.&lt;/p&gt;
+
+&lt;p&gt;The method outlined here will be safe &lt;strong&gt;even if you have hacked core    Wordpress files&lt;&amp;#47;strong&gt;, as long as you are very careful in constructing your rsync command.&lt;/p&gt;
+
+&lt;p&gt;&lt;ol&gt;
+&lt;li&gt; Import and tag the latest Wordpress release into the repository
+&lt;pre class=&quot;src&quot;&gt;&lt;span style=&quot;color: #da70d6;&quot;&gt;cd&amp;lt;&amp;#47;span&amp;gt; &amp;#47;tmp&lt;br /&gt;
+tar zxf &amp;#47;path&amp;#47;to&amp;#47;archive&amp;#47;wordpress-2.6.2.tar.gz&lt;br /&gt;
+    OR&lt;br /&gt;
+unzip &amp;#47;path&amp;#47;to&amp;#47;archive&amp;#47;wordpress-2.6.2.zip&lt;br /&gt;
+svn import -m &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;Vanilla 2.6.2&amp;quot;&amp;lt;&amp;#47;span&amp;gt; wordpress file:&amp;#47;&amp;#47;&amp;#47;repository&amp;#47;wordpress&amp;#47;tags&amp;#47;2.6.2&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; Remove the directory in &amp;#47;tmp
+&lt;pre class=&quot;src&quot;&gt;rm -rf &amp;#47;tmp&amp;#47;wordpress&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; Check out a fresh copy of your Wordpress project, and export a copy of the latest vanilla Wordpress
+&lt;pre class=&quot;src&quot;&gt;&lt;span style=&quot;color: #da70d6;&quot;&gt;cd&amp;lt;&amp;#47;span&amp;gt; &amp;#47;tmp&lt;br /&gt;
+svn co --ignore-externals file:&amp;#47;&amp;#47;&amp;#47;repository&amp;#47;wordpress&amp;#47;projects&amp;#47;myhappyblog&lt;br /&gt;
+svn export file:&amp;#47;&amp;#47;&amp;#47;repository&amp;#47;wordpress&amp;#47;tags&amp;#47;2.6.2 wordpress-2.6.2&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; Do a &lt;strong&gt;dry run&amp;lt;&amp;#47;strong&amp;gt; of rsync, starting with something like the following
+&lt;pre class=&quot;src&quot;&gt;rsync --dry-run -av --delete --svn-exclude --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;.svn&amp;#47;&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude favicon.ico wordpress-2.6.2&amp;#47; myhappyblog&amp;#47;|less -SiX&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; Now begins an iterative process &amp;ndash; carefully examine the output from the above rsync dry run, &lt;strong&gt;paying special attention to files       that will be deleted&amp;lt;&amp;#47;strong&amp;gt;, since those will show you directories and files you have added.  Add those directories or files as required using multiple &amp;#39;&amp;ndash;exclude&amp;#39; options.  Here is an example from a recent upgrade I did:
+&lt;pre class=&quot;src&quot;&gt;rsync --dry-run -av --delete --svn-exclude --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;.svn&amp;#47;&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude favicon.ico --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;images&amp;#47;&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;wp-content&amp;#47;plugins&amp;#47;podpress&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;wp-content&amp;#47;themes&amp;#47;sandbox&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;wp-content&amp;#47;uploads&amp;#39;&amp;lt;&amp;#47;span&amp;gt; wordpress-2.6.2&amp;#47; myhappyblog&amp;#47;|less -SiX&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; Once you are satisfied that you are not asking rsync to delete files and directories you need, run the command without &amp;#39;&amp;ndash;dry-run&amp;#39;
+&lt;pre class=&quot;src&quot;&gt;rsync -av --delete --svn-exclude --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;.svn&amp;#47;&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude favicon.ico --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;images&amp;#47;&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;wp-content&amp;#47;plugins&amp;#47;podpress&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;wp-content&amp;#47;themes&amp;#47;sandbox&amp;#39;&amp;lt;&amp;#47;span&amp;gt; --exclude &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;#39;wp-content&amp;#47;uploads&amp;#39;&amp;lt;&amp;#47;span&amp;gt; wordpress-2.6.2&amp;#47; myhappyblog&amp;#47;&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; Now change to your project working directory and look at the output of &amp;#39;svn stat&amp;#39;, here including sample output:
+&lt;pre class=&quot;src&quot;&gt;svn stat&lt;/p&gt;
+&lt;p&gt;M      wp-login.php&lt;br /&gt;
+M      wp-includes&amp;#47;post.php&lt;br /&gt;
+M      wp-includes&amp;#47;version.php&lt;br /&gt;
+M      wp-includes&amp;#47;query.php&lt;br /&gt;
+M      wp-includes&amp;#47;formatting.php&lt;br /&gt;
+M      wp-includes&amp;#47;pluggable.php&lt;br /&gt;
+M      wp-includes&amp;#47;widgets.php&lt;br /&gt;
+M      wp-settings.php&lt;br /&gt;
+M      wp-admin&amp;#47;includes&amp;#47;template.php&lt;br /&gt;
+M      wp-admin&amp;#47;includes&amp;#47;image.php&lt;br /&gt;
+M      wp-admin&amp;#47;import&amp;#47;textpattern.php&lt;br /&gt;
+M      wp-admin&amp;#47;css&amp;#47;press-this-ie.css&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; (conditional) In major upgrades, there will be Wordpress core file deletions and additions.  Handling these will require an extra couple commands, shown below.  These commands are only necessary if there are additions and deletions.
+&lt;pre class=&quot;src&quot;&gt;&lt;span style=&quot;color: #b22222;&quot;&gt;# &amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #b22222;&quot;&gt;tell repository about deleted files that were removed by rsync&lt;br /&gt;
+&amp;lt;&amp;#47;span&amp;gt;svn remove --force &lt;span style=&quot;color: #ff00ff;&quot;&gt;&lt;code&gt;svn stat |egrep &amp;#39;^\!&amp;#39; | cut -d&amp;#39; &amp;#39; -f2-999&lt;/code&gt;&amp;lt;&amp;#47;span&amp;gt;&lt;br /&gt;
+&lt;span style=&quot;color: #b22222;&quot;&gt;# &amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #b22222;&quot;&gt;add new files to repository&lt;br /&gt;
+&amp;lt;&amp;#47;span&amp;gt;svn add &lt;span style=&quot;color: #ff00ff;&quot;&gt;&lt;code&gt;svn stat|egrep &amp;#39;^\?&amp;#39; | cut -d&amp;#39; &amp;#39; -f2-999&lt;/code&gt;&amp;lt;&amp;#47;span&amp;gt;&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; You may choose to look through all the changes, or you may decide that the files that have been changed are safe (ie, unhacked Wordpress core files).Now you are ready to commit the changes to the repository.
+&lt;pre class=&quot;src&quot;&gt;svn diff | less &lt;span style=&quot;color: #b22222;&quot;&gt;# &amp;lt;&amp;#47;span&amp;gt;&lt;span style=&quot;color: #b22222;&quot;&gt;optional&lt;br /&gt;
+&amp;lt;&amp;#47;span&amp;gt;svn commit -m &lt;span style=&quot;color: #0000ff;&quot;&gt;&amp;quot;Upgraded to Wordpress 2.6.2&amp;quot;&amp;lt;&amp;#47;span&amp;gt;&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; At long last, you can go to the working directory where you are actively developing, and update that.  Once you have tested thoroughly, you will be ready to update your live site (possibly with the same &amp;#39;svn update&amp;#39; command).
+&lt;pre class=&quot;src&quot;&gt;&lt;span style=&quot;color: #da70d6;&quot;&gt;cd&amp;lt;&amp;#47;span&amp;gt; &amp;#47;path&amp;#47;to&amp;#47;my&amp;#47;development&amp;#47;myhappyblog&lt;br /&gt;
+svn up&amp;lt;&amp;#47;pre&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;li&amp;gt;&lt;/p&gt;
+&lt;li&gt; Repeat from Step 3 for each of your SVN-managed Wordpress projects!&amp;lt;&amp;#47;li&amp;gt;
+&lt;li&gt; Drink.  Pray that Wordpress is not upgraded for at least another 6 months.&amp;lt;&amp;#47;li&amp;gt;&lt;br /&gt;
+&amp;lt;&amp;#47;ol&amp;gt;&lt;/p&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+
+</feed>

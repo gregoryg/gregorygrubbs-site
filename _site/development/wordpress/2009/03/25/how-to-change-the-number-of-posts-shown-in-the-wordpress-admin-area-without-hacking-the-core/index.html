@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      How to change the number of posts shown in the WordPress admin area without hacking the core &middot; Gregory Grubbs Blog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <div class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">Gregory Grubbs Blog</a>
+          <small>Inattention in software explosion</small>
+        </h3>
+      </div>
+
+      <div class="post">
+  <h1 class="post-title">How to change the number of posts shown in the WordPress admin area without hacking the core</h1>
+  <span class="post-date">25 Mar 2009</span>
+  <p>[caption id="attachment_154" align="alignnone" width="500" caption="use the hook!"]<img class="size-full wp-image-154" title="use the hook!" src="http:&#47;&#47;gregorygrubbs.com&#47;wp-content&#47;uploads&#47;2009&#47;03&#47;2921148701_6d1985e27f-cropped.jpg" alt="use the hook!" width="500" height="248" &#47;>[&#47;caption]</p>
+
+<p>It is easy to go in and hack the core WordPress files to change the hard-coded number, but I wanted to find a way to do it with a hook. &nbsp;That way, I could one day change the number of posts shown using controls in the interface.</p>
+
+<p>Though there is no filter provided for the number of posts displayed, I hit upon a method of doing this which I would like to share. &nbsp;Perhaps someone will point out a better way, but for now this is making me happy</p>
+
+<p>The trick is to hijack the query string just for the query that produces the table of posts. &nbsp;Here's what I did:</p>
+
+<p><pre lang="PHP">
+&#47;**  * Extend the number of posts displayed in the Edit Posts  *&#47;<br />
+function dapl<em>query</em>string($query<em>string) {<br />
+    global $pagenow;<br />
+    if (is</em>admin() &amp;&amp; $pagenow == &#39;edit.php&#39;) {<br />
+        $query<em>string = str</em>replace(&#39;posts<em>per</em>page=15&#39;, &#39;posts<em>per</em>page=100&#39;, $query<em>string);<br />
+    }<br />
+    return $query</em>string;<br />
+}<br />
+add<em>filter(&#39;query</em>string&#39;, &#39;dapl<em>query</em>string&#39;);<br />
+&lt;&#47;pre&gt;</p></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//development/emacs/android/2010/09/11/tips-on-android-development-using-emacs/">
+            Tips on Android Development Using Emacs
+            <small>11 Sep 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//emacs/2010/05/23/10-tips-emacs-windows/">
+            10 Tips for Powerful Emacs on Windows
+            <small>23 May 2010</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//development/wordpress/emacs/2009/11/15/snippets-with-emacs-lisp-power/">
+            Snippets with Emacs Lisp Power
+            <small>15 Nov 2009</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+      <div class="footer">
+        <p>
+          &copy; 2014. All rights reserved.
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>
